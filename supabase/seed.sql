@@ -1,0 +1,3 @@
+-- User-owned starter rows are created after authentication by calling:
+-- select public.bootstrap_finance_user();
+-- This seed file intentionally contains no personal or shared financial data.
