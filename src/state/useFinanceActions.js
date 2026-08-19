@@ -318,6 +318,17 @@ export function useFinanceActions({
       });
     }
 
+    if (section === "fixedExpenses") {
+      updateRecord(section, editingRecord.id, {
+        label: applySmartTextFormatting(editDraft.label || "Gasto fijo"),
+        category: editDraft.category || "Otros",
+        amount: Number(editDraft.amount || 0),
+        currency: editDraft.currency || "CRC",
+        q1: Number(editDraft.q1 || 0),
+        q2: Number(editDraft.q2 || 0)
+      });
+    }
+
     if (section === "savings") {
       const savingPayload = {
         date: editDraft.date,

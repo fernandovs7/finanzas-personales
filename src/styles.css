@@ -1511,6 +1511,68 @@ select {
   background: rgba(225, 37, 27, 0.06);
 }
 
+.fixed-expense-card {
+  grid-template-columns: minmax(220px, 1.2fr) minmax(110px, 0.55fr) 70px auto;
+}
+
+.fixed-expense-card.editing {
+  border-color: rgba(225, 37, 27, 0.24);
+}
+
+.fixed-expense-actions,
+.fixed-expense-confirm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.icon-text-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.icon-text-btn svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.8;
+}
+
+.fixed-expense-form,
+.fixed-expense-delete-confirmation {
+  grid-column: 1 / -1;
+}
+
+.fixed-expense-form {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fixed-expense-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.fixed-expense-delete-confirmation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 2px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(225, 37, 27, 0.14);
+}
+
+.fixed-expense-delete-confirmation p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .history-editor {
   padding: 0 20px 20px;
 }
@@ -1929,6 +1991,22 @@ select {
     grid-template-columns: 1fr;
   }
 
+  .fixed-expense-card,
+  .fixed-expense-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fixed-expense-card > div:first-child,
+  .fixed-expense-actions,
+  .fixed-expense-form,
+  .fixed-expense-delete-confirmation {
+    grid-column: 1 / -1;
+  }
+
+  .fixed-expense-actions {
+    justify-content: flex-start;
+  }
+
   .history-toolbar {
     grid-template-columns: 1fr;
   }
@@ -2145,6 +2223,20 @@ select {
   .list-card {
     gap: 10px;
     padding: 16px;
+  }
+
+  .fixed-expense-card,
+  .fixed-expense-form {
+    grid-template-columns: 1fr;
+  }
+
+  .fixed-expense-delete-confirmation {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fixed-expense-confirm-actions {
+    justify-content: flex-start;
   }
 
   .savings-progress-card {

@@ -1,12 +1,38 @@
+import { useState } from "react";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { useFinance } from "../state/FinanceContext.jsx";
 import { SectionTitle, SummaryCard } from "../components/ui.jsx";
 import { SelectField } from "../components/SelectField.jsx";
 import { categories } from "../config/options.js";
 import { money } from "../utils/money.js";
-import { handleCapitalizedInput } from "../utils/text.js";
+import { applySmartTextFormatting, handleCapitalizedInput } from "../utils/text.js";
 
 export function FixedExpensesPage() {
-  const { state, fixedTotals, handleFixedExpense, toggleFixedExpense } = useFinance();
+  const {
+    state,
+    fixedTotals,
+    handleFixedExpense,
+    toggleFixedExpense,
+    editingRecord,
+    editDraft,
+    setEditDraft,
+    startEditing,
+    stopEditing,
+    deleteRecord,
+    handleEditSubmit
+  } = useFinance();
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+
+  function beginEditing(item) {
+    setPendingDeleteId(null);
+    startEditing("fixedExpenses", item);
+  }
+
+  function confirmDelete(id) {
+    deleteRecord("fixedExpenses", id);
+    setPendingDeleteId(null);
+  }
+
   return (
     <>
         {state.activeView === "fixed" ? (
@@ -83,26 +109,188 @@ export function FixedExpensesPage() {
               </form>
 
               <div className="list-table">
-                {state.fixedExpenses.map((item) => (
-                  <div className="list-card action-card" key={item.id}>
-                    <div>
-                      <div className="title">{item.label}</div>
-                      <div className="muted">
-                        {item.category} • {item.q1}% Q1 / {item.q2}% Q2
-                      </div>
-                    </div>
-                    <div>{money(item.amount, item.currency)}</div>
-                    <div>{item.currency}</div>
-                    <div>
-                      <button
-                        className={`pill-button ${item.active ? "on" : "off"}`}
-                        onClick={() => toggleFixedExpense(item.id)}
+                {state.fixedExpenses.length > 0 ? (
+                  state.fixedExpenses.map((item) => {
+                    const isEditing =
+                      editingRecord?.section === "fixedExpenses" &&
+                      editingRecord?.id === item.id;
+                    const isConfirmingDelete = pendingDeleteId === item.id;
+
+                    return (
+                      <article
+                        className={`list-card action-card fixed-expense-card ${isEditing ? "editing" : ""}`}
+                        key={item.id}
                       >
-                        {item.active ? "Activo" : "Pausado"}
-                      </button>
-                    </div>
+                        <div>
+                          <div className="title">{item.label}</div>
+                          <div className="muted">
+                            {item.category} • {item.q1}% Q1 / {item.q2}% Q2
+                          </div>
+                        </div>
+                        <strong>{money(item.amount, item.currency)}</strong>
+                        <div>{item.currency}</div>
+                        <div className="fixed-expense-actions">
+                          <button
+                            type="button"
+                            className={`pill-button ${item.active ? "on" : "off"}`}
+                            onClick={() => toggleFixedExpense(item.id)}
+                          >
+                            {item.active ? "Activo" : "Pausado"}
+                          </button>
+                          <button
+                            type="button"
+                            className="ghost-btn icon-text-btn"
+                            onClick={() => (isEditing ? stopEditing() : beginEditing(item))}
+                          >
+                            <IconPencil aria-hidden="true" />
+                            {isEditing ? "Cerrar" : "Editar"}
+                          </button>
+                          <button
+                            type="button"
+                            className="ghost-btn danger icon-text-btn"
+                            onClick={() => {
+                              stopEditing();
+                              setPendingDeleteId(isConfirmingDelete ? null : item.id);
+                            }}
+                          >
+                            <IconTrash aria-hidden="true" />
+                            Eliminar
+                          </button>
+                        </div>
+
+                        {isEditing ? (
+                          <form
+                            className="history-form fixed-expense-form"
+                            onSubmit={handleEditSubmit}
+                          >
+                            <label>
+                              Nombre
+                              <input
+                                type="text"
+                                onInput={handleCapitalizedInput}
+                                value={editDraft?.label || ""}
+                                onChange={(event) =>
+                                  setEditDraft((current) => ({
+                                    ...current,
+                                    label: applySmartTextFormatting(event.target.value)
+                                  }))
+                                }
+                                required
+                              />
+                            </label>
+                            <label>
+                              Categoría
+                              <SelectField
+                                value={editDraft?.category || "Servicios"}
+                                onValueChange={(category) =>
+                                  setEditDraft((current) => ({ ...current, category }))
+                                }
+                                options={categories}
+                                ariaLabel="Categoría"
+                              />
+                            </label>
+                            <label>
+                              Monto
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={editDraft?.amount ?? ""}
+                                onChange={(event) =>
+                                  setEditDraft((current) => ({
+                                    ...current,
+                                    amount: event.target.value
+                                  }))
+                                }
+                                required
+                              />
+                            </label>
+                            <label>
+                              Moneda
+                              <SelectField
+                                value={editDraft?.currency || "CRC"}
+                                onValueChange={(currency) =>
+                                  setEditDraft((current) => ({ ...current, currency }))
+                                }
+                                options={["CRC", "USD"]}
+                                ariaLabel="Moneda"
+                              />
+                            </label>
+                            <label>
+                              % Q1
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={editDraft?.q1 ?? ""}
+                                onChange={(event) =>
+                                  setEditDraft((current) => ({ ...current, q1: event.target.value }))
+                                }
+                                required
+                              />
+                            </label>
+                            <label>
+                              % Q2
+                              <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={editDraft?.q2 ?? ""}
+                                onChange={(event) =>
+                                  setEditDraft((current) => ({ ...current, q2: event.target.value }))
+                                }
+                                required
+                              />
+                            </label>
+                            <p className="fixed-expense-note">
+                              Los cambios se aplicarán a todos los períodos donde aparece este gasto.
+                            </p>
+                            <div className="history-form-actions">
+                              <button type="button" className="ghost-btn" onClick={stopEditing}>
+                                Cancelar
+                              </button>
+                              <button type="submit" className="primary-btn">
+                                Guardar cambios
+                              </button>
+                            </div>
+                          </form>
+                        ) : null}
+
+                        {isConfirmingDelete ? (
+                          <div className="fixed-expense-delete-confirmation" role="alert">
+                            <div>
+                              <strong>¿Eliminar {item.label}?</strong>
+                              <p>
+                                Se quitará de todos los períodos. Si solo dejó de cobrarse,
+                                conviene pausarlo.
+                              </p>
+                            </div>
+                            <div className="fixed-expense-confirm-actions">
+                              <button
+                                type="button"
+                                className="ghost-btn"
+                                onClick={() => setPendingDeleteId(null)}
+                              >
+                                Cancelar
+                              </button>
+                              <button
+                                type="button"
+                                className="ghost-btn danger"
+                                onClick={() => confirmDelete(item.id)}
+                              >
+                                Sí, eliminar
+                              </button>
+                            </div>
+                          </div>
+                        ) : null}
+                      </article>
+                    );
+                  })
+                ) : (
+                  <div className="empty-state">
+                    Todavía no tenés gastos fijos registrados.
                   </div>
-                ))}
+                )}
               </div>
             </article>
           </section>
