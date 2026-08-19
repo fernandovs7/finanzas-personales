@@ -1579,10 +1579,28 @@ select {
 
 .history-form {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 16px;
   padding-top: 18px;
   border-top: 1px solid rgba(17, 17, 17, 0.08);
+}
+
+.history-form label {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto minmax(48px, auto);
+  align-content: start;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.history-form input,
+.history-form .select-trigger {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
 }
 
 .history-form-actions {
@@ -1986,9 +2004,12 @@ select {
     padding: 16px;
   }
 
-  .history-row,
-  .history-form {
+  .history-row {
     grid-template-columns: 1fr;
+  }
+
+  .history-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .fixed-expense-card,
