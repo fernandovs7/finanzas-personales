@@ -62,7 +62,7 @@ export function SummaryCard({ title, value, hint, icon }) {
         <p className="eyebrow">{title}</p>
         {icon ? <Icon name={icon} /> : null}
       </div>
-      <p className="value">{value}</p>
+      <p className="value motion-number" key={value}>{value}</p>
       <p className="hint">{hint}</p>
     </article>
   );

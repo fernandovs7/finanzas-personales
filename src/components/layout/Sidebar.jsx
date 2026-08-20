@@ -6,6 +6,7 @@ import { money } from "../../utils/money.js";
 import { applySmartTextFormatting, handleCapitalizedInput } from "../../utils/text.js";
 import { useAuth } from "../../state/AuthContext.jsx";
 import { BrandMark } from "../BrandMark.jsx";
+import { CollapsibleContent } from "../CollapsibleContent.jsx";
 
 export function Sidebar() {
   const { session, signOut } = useAuth();
@@ -59,7 +60,8 @@ export function Sidebar() {
             </div>
             <span className="panel-toggle-icon">{openForm === "salary" ? "−" : "+"}</span>
           </button>
-          {openForm === "salary" ? <form className="quick-form" onSubmit={handleSalarySubmit}>
+          <CollapsibleContent open={openForm === "salary"}>
+            <form className="quick-form" onSubmit={handleSalarySubmit}>
             <label>
               Fecha de pago
               <input
@@ -143,7 +145,8 @@ export function Sidebar() {
             <button className="primary-btn" type="submit">
               Guardar pago
             </button>
-          </form> : null}
+            </form>
+          </CollapsibleContent>
         </section>
 
         <section className="panel soft-panel collapsible-panel">
@@ -162,7 +165,8 @@ export function Sidebar() {
             </div>
             <span className="panel-toggle-icon">{openForm === "movement" ? "−" : "+"}</span>
           </button>
-          {openForm === "movement" ? <form className="quick-form" onSubmit={handleMovementSubmit}>
+          <CollapsibleContent open={openForm === "movement"}>
+            <form className="quick-form" onSubmit={handleMovementSubmit}>
             <label>
               Fecha del gasto
               <input
@@ -327,7 +331,8 @@ export function Sidebar() {
             <button className="primary-btn" type="submit">
               Guardar gasto real
             </button>
-          </form> : null}
+            </form>
+          </CollapsibleContent>
         </section>
 
         {session?.user ? (

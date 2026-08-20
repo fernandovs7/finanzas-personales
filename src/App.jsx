@@ -50,10 +50,12 @@ function FinanceApplication() {
     <div className="app-shell">
       <Sidebar />
       <main className="main-content">
-        <PageHeader />
-        <ErrorBoundary resetKey={state.activeView}>
-          <ActivePage />
-        </ErrorBoundary>
+        <div className="page-transition" key={state.activeView}>
+          <PageHeader />
+          <ErrorBoundary resetKey={state.activeView}>
+            <ActivePage />
+          </ErrorBoundary>
+        </div>
       </main>
     </div>
   );

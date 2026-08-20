@@ -18,7 +18,12 @@ export function DashboardPage() {
                   <h3><Icon name="available" />Saldo disponible real</h3>
                 </div>
                 <p className="hero-balance-scope">{summaryContext.label}</p>
-                <p className="hero-balance-value">{money(summaryContext.available, "CRC")}</p>
+                <p
+                  className="hero-balance-value motion-number"
+                  key={`${summaryMode}-${summaryContext.available}`}
+                >
+                  {money(summaryContext.available, "CRC")}
+                </p>
                 <p className="hero-balance-note">
                   {summaryMode === "fortnight"
                     ? "Este es el monto que te queda libre en la bolsa que estás usando ahorita."
@@ -62,7 +67,11 @@ export function DashboardPage() {
               <div className="hero-balance-inline">
                 <div className="hero-inline-top">
                   <p className="hero-inline-label">Cómo se arma este monto</p>
-                  <div className="scope-toggle" role="tablist" aria-label="Vista de resumen">
+                  <div
+                    className={`scope-toggle mode-${summaryMode}`}
+                    role="tablist"
+                    aria-label="Vista de resumen"
+                  >
                     <button
                       type="button"
                       className={summaryMode === "fortnight" ? "active" : ""}
