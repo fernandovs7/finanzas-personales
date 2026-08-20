@@ -2335,6 +2335,13 @@ select {
 }
 
 @media (max-width: 760px) {
+  input,
+  select,
+  textarea,
+  .select-trigger {
+    font-size: 16px;
+  }
+
   .primary-btn.full {
     min-width: 0;
     width: 100%;
