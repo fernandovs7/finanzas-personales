@@ -460,6 +460,10 @@ select {
 
 .primary-btn.full {
   grid-column: 1 / -1;
+  min-width: 220px;
+  width: fit-content;
+  justify-self: end;
+  padding-inline: 28px;
 }
 
 .helper-box {
@@ -2096,6 +2100,12 @@ select {
 }
 
 @media (max-width: 760px) {
+  .primary-btn.full {
+    min-width: 0;
+    width: 100%;
+    justify-self: stretch;
+  }
+
   .sidebar,
   .main-content {
     padding: 24px 20px 20px;
