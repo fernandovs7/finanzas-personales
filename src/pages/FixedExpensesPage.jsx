@@ -135,23 +135,25 @@ export function FixedExpensesPage() {
                         <strong>{money(item.amount, item.currency)}</strong>
                         <div>{item.currency}</div>
                         <div className="fixed-expense-actions">
-                          <button
-                            type="button"
-                            className={`payment-status-button ${isPaid ? "paid" : "pending"}`}
-                            aria-pressed={isPaid}
-                            title={isPaid ? "Marcar como pendiente" : "Marcar como pagado"}
-                            onClick={() => toggleFixedExpensePaid(item.id, state.selectedPeriod)}
-                          >
-                            {isPaid ? (
-                              <IconCircleCheck aria-hidden="true" />
-                            ) : (
-                              <IconClock aria-hidden="true" />
-                            )}
-                            <span>
-                              <strong>{isPaid ? "Pagado" : "Pendiente"}</strong>
-                              <small>{selectedPeriodLabel}</small>
-                            </span>
-                          </button>
+                          {item.active ? (
+                            <button
+                              type="button"
+                              className={`payment-status-button ${isPaid ? "paid" : "pending"}`}
+                              aria-pressed={isPaid}
+                              title={isPaid ? "Marcar como pendiente" : "Marcar como pagado"}
+                              onClick={() => toggleFixedExpensePaid(item.id, state.selectedPeriod)}
+                            >
+                              {isPaid ? (
+                                <IconCircleCheck aria-hidden="true" />
+                              ) : (
+                                <IconClock aria-hidden="true" />
+                              )}
+                              <span>
+                                <strong>{isPaid ? "Pagado" : "Pendiente"}</strong>
+                                <small>{selectedPeriodLabel}</small>
+                              </span>
+                            </button>
+                          ) : null}
                           <button
                             type="button"
                             className={`pill-button ${item.active ? "on" : "off"}`}
