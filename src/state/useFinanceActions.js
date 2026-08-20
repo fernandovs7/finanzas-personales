@@ -1,5 +1,6 @@
 import { categories, quickPayments } from "../config/options.js";
 import { getActiveBagFortnight } from "../domain/finance.js";
+import { toggleFixedExpensePaidPeriod } from "../domain/fixedExpensePayment.js";
 import { TODAY, addMonthsToDate, toPeriod } from "../utils/date.js";
 import { applySmartTextFormatting } from "../utils/text.js";
 import { createClientId } from "../utils/id.js";
@@ -79,6 +80,20 @@ export function useFinanceActions({
       ...current,
       fixedExpenses: current.fixedExpenses.map((item) =>
         item.id === id ? { ...item, active: !item.active } : item
+      )
+    }));
+  }
+
+  function toggleFixedExpensePaid(id, period) {
+    setState((current) => ({
+      ...current,
+      fixedExpenses: current.fixedExpenses.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              paidPeriods: toggleFixedExpensePaidPeriod(item.paidPeriods, period)
+            }
+          : item
       )
     }));
   }
@@ -350,5 +365,5 @@ export function useFinanceActions({
   }
 
 
-  return { handleSalarySubmit, handleFixedExpense, handleMovementSubmit, applyMovementPreset, handleLiabilitySubmit, handleSavingsSubmit, handleEditSubmit, startEditing, stopEditing, deleteRecord, toggleFixedExpense, toggleSavingPlan };
+  return { handleSalarySubmit, handleFixedExpense, handleMovementSubmit, applyMovementPreset, handleLiabilitySubmit, handleSavingsSubmit, handleEditSubmit, startEditing, stopEditing, deleteRecord, toggleFixedExpense, toggleFixedExpensePaid, toggleSavingPlan };
 }

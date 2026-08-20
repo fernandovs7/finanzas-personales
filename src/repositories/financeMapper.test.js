@@ -69,5 +69,6 @@ test("database mapping preserves currencies and fortnight splits", () => {
   assert.equal(records.fixedExpenses[0].currency, "USD");
   assert.equal(records.fixedExpenses[0].q1_percent, 50);
   assert.equal(records.fixedExpenses[0].q2_percent, 50);
+  assert.deepEqual(records.fixedExpenses[0].paid_periods, []);
   assert.equal(records.plannedPayments[4].currency, "CRC");
 });

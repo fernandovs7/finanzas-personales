@@ -94,7 +94,8 @@ export function toDatabaseRecords(state, userId, references = {}) {
       currency: item.currency,
       q1_percent: Number(item.q1),
       q2_percent: Number(item.q2),
-      active: item.active !== false
+      active: item.active !== false,
+      paid_periods: item.paidPeriods || []
     })),
     paymentPlans: groupPaymentPlans(state.liabilities).map((item) => ({
       user_id: userId,
@@ -210,6 +211,7 @@ export function fromDatabaseRecords(records) {
       q1: Number(item.q1_percent),
       q2: Number(item.q2_percent),
       active: item.active,
+      paidPeriods: item.paid_periods || [],
       createdAt: item.created_at
     })),
     liabilities: records.plannedPayments.map((item) => ({

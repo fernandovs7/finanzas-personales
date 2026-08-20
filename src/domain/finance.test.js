@@ -22,7 +22,14 @@ test("una compra de 150 mil en tres cuotas reserva 25 mil por quincena", () => {
 
 test("un gasto fijo distribuido 50/50 conserva la mitad en cada quincena", () => {
   const expenses = [
-    { active: true, currency: "CRC", amount: 12000, q1: 50, q2: 50 }
+    {
+      active: true,
+      currency: "CRC",
+      amount: 12000,
+      q1: 50,
+      q2: 50,
+      paidPeriods: ["2026-08"]
+    }
   ];
 
   assert.equal(splitFixed(expenses, "Q1", "CRC"), 6000);

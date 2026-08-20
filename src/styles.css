@@ -1523,6 +1523,54 @@ select {
   flex-wrap: wrap;
 }
 
+.payment-status-button {
+  min-width: 156px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.payment-status-button svg {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  stroke-width: 1.9;
+}
+
+.payment-status-button span {
+  display: grid;
+  gap: 1px;
+}
+
+.payment-status-button strong,
+.payment-status-button small {
+  line-height: 1.15;
+}
+
+.payment-status-button small {
+  font-size: 0.7rem;
+  font-weight: 650;
+  text-transform: capitalize;
+  opacity: 0.72;
+}
+
+.payment-status-button.pending {
+  color: #8c5b0f;
+  background: rgba(244, 194, 77, 0.16);
+  border-color: rgba(166, 114, 27, 0.14);
+}
+
+.payment-status-button.paid {
+  color: #08795b;
+  background: rgba(18, 160, 122, 0.13);
+  border-color: rgba(18, 160, 122, 0.14);
+}
+
 .icon-text-btn {
   display: inline-flex;
   align-items: center;

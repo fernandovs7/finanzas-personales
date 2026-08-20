@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconCircleCheck, IconClock, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useFinance } from "../state/FinanceContext.jsx";
 import { SectionTitle, SummaryCard } from "../components/ui.jsx";
 import { SelectField } from "../components/SelectField.jsx";
 import { categories } from "../config/options.js";
+import { isFixedExpensePaid } from "../domain/fixedExpensePayment.js";
+import { periodLabel } from "../utils/date.js";
 import { money } from "../utils/money.js";
 import { applySmartTextFormatting, handleCapitalizedInput } from "../utils/text.js";
 
@@ -13,6 +15,7 @@ export function FixedExpensesPage() {
     fixedTotals,
     handleFixedExpense,
     toggleFixedExpense,
+    toggleFixedExpensePaid,
     editingRecord,
     editDraft,
     setEditDraft,
@@ -115,6 +118,8 @@ export function FixedExpensesPage() {
                       editingRecord?.section === "fixedExpenses" &&
                       editingRecord?.id === item.id;
                     const isConfirmingDelete = pendingDeleteId === item.id;
+                    const isPaid = isFixedExpensePaid(item, state.selectedPeriod);
+                    const selectedPeriodLabel = periodLabel(state.selectedPeriod);
 
                     return (
                       <article
@@ -130,6 +135,23 @@ export function FixedExpensesPage() {
                         <strong>{money(item.amount, item.currency)}</strong>
                         <div>{item.currency}</div>
                         <div className="fixed-expense-actions">
+                          <button
+                            type="button"
+                            className={`payment-status-button ${isPaid ? "paid" : "pending"}`}
+                            aria-pressed={isPaid}
+                            title={isPaid ? "Marcar como pendiente" : "Marcar como pagado"}
+                            onClick={() => toggleFixedExpensePaid(item.id, state.selectedPeriod)}
+                          >
+                            {isPaid ? (
+                              <IconCircleCheck aria-hidden="true" />
+                            ) : (
+                              <IconClock aria-hidden="true" />
+                            )}
+                            <span>
+                              <strong>{isPaid ? "Pagado" : "Pendiente"}</strong>
+                              <small>{selectedPeriodLabel}</small>
+                            </span>
+                          </button>
                           <button
                             type="button"
                             className={`pill-button ${item.active ? "on" : "off"}`}

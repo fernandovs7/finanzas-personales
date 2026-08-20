@@ -65,9 +65,10 @@ export function normalizeStateData(data) {
     incomes: (data.incomes || []).map((item) =>
       withClientId(capitalizeFields(item, ["note"]))
     ),
-    fixedExpenses: (data.fixedExpenses || []).map((item) =>
-      withClientId(capitalizeFields(item, ["label"]))
-    ),
+    fixedExpenses: (data.fixedExpenses || []).map((item) => ({
+      ...withClientId(capitalizeFields(item, ["label"])),
+      paidPeriods: Array.isArray(item.paidPeriods) ? item.paidPeriods : []
+    })),
     liabilities: (data.liabilities || []).map((item) => {
       const normalized = withClientId(capitalizeFields(item, ["label"]));
       if (!normalized.planGroupId) return normalized;
