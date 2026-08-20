@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { shouldImportLocalFinanceState } from "../domain/financeSyncPolicy.js";
 import { createSupabaseFinanceRepository } from "../repositories/supabaseFinanceRepository.js";
 
 function financeFingerprint(state) {
@@ -38,9 +39,15 @@ export function useCloudFinanceSync({ state, setState, session }) {
     async function hydrate() {
       try {
         const hasImported = window.localStorage.getItem(markerKey) === "true";
-        const cloudState = hasImported
-          ? await repository.load()
-          : await repository.importLocalState(state);
+        const existingCloudState = await repository.load();
+        const shouldImportLocalState = shouldImportLocalFinanceState({
+          hasImported,
+          cloudState: existingCloudState,
+          localState: state
+        });
+        const cloudState = shouldImportLocalState
+          ? await repository.importLocalState(state)
+          : existingCloudState;
 
         if (cancelled) return;
 
