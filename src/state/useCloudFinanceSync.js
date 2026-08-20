@@ -5,6 +5,7 @@ import {
 } from "../domain/deduplicateFinanceState.js";
 import { shouldImportLocalFinanceState } from "../domain/financeSyncPolicy.js";
 import { createSupabaseFinanceRepository } from "../repositories/supabaseFinanceRepository.js";
+import { retryTransientAuthTiming } from "../utils/retry.js";
 
 function financeFingerprint(state) {
   return JSON.stringify({
@@ -43,14 +44,14 @@ export function useCloudFinanceSync({ state, setState, session }) {
     async function hydrate() {
       try {
         const hasImported = window.localStorage.getItem(markerKey) === "true";
-        const existingCloudState = await repository.load();
+        const existingCloudState = await retryTransientAuthTiming(() => repository.load());
         const shouldImportLocalState = shouldImportLocalFinanceState({
           hasImported,
           cloudState: existingCloudState,
           localState: state
         });
         const cloudState = shouldImportLocalState
-          ? await repository.importLocalState(state)
+          ? await retryTransientAuthTiming(() => repository.importLocalState(state))
           : existingCloudState;
 
         if (cancelled) return;
@@ -97,7 +98,7 @@ export function useCloudFinanceSync({ state, setState, session }) {
 
     const timeoutId = window.setTimeout(async () => {
       try {
-        await repository.syncState(state);
+        await retryTransientAuthTiming(() => repository.syncState(state));
         syncedFingerprintRef.current = nextFingerprint;
         setSyncStatus("synced");
       } catch (error) {
