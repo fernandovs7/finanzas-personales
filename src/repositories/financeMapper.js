@@ -196,7 +196,8 @@ export function fromDatabaseRecords(records) {
       totalUsd: Number(item.total_usd),
       rate: Number(item.exchange_rate),
       reserveSavingsUsd: Number(item.reserved_savings_usd),
-      note: item.note
+      note: item.note,
+      createdAt: item.created_at
     })),
     fixedExpenses: records.fixedExpenses.map((item) => ({
       id: item.client_id,
@@ -208,7 +209,8 @@ export function fromDatabaseRecords(records) {
       currency: item.currency,
       q1: Number(item.q1_percent),
       q2: Number(item.q2_percent),
-      active: item.active
+      active: item.active,
+      createdAt: item.created_at
     })),
     liabilities: records.plannedPayments.map((item) => ({
       id: item.client_id,
@@ -227,7 +229,8 @@ export function fromDatabaseRecords(records) {
       installmentCurrent: item.installment_number,
       installmentTotal: item.installment_count,
       planGroupId: item.plan_id,
-      planGroupClientId: paymentPlanClientIds.get(item.plan_id) || null
+      planGroupClientId: paymentPlanClientIds.get(item.plan_id) || null,
+      createdAt: item.created_at
     })),
     movements: records.expenses.map((item) => ({
       id: item.client_id,
@@ -239,7 +242,8 @@ export function fromDatabaseRecords(records) {
       amount: Number(item.amount),
       currency: item.currency,
       payment: paymentMethodNames.get(item.payment_method_id) || "Sin medio",
-      bagFortnight: item.bag_fortnight
+      bagFortnight: item.bag_fortnight,
+      createdAt: item.created_at
     })),
     savings: records.savingEntries.map((item) => ({
       id: item.client_id,
@@ -251,7 +255,8 @@ export function fromDatabaseRecords(records) {
       currency: item.currency,
       note: item.note,
       planId: savingPlanClientIds.get(item.saving_plan_id) || null,
-      planClientId: savingPlanClientIds.get(item.saving_plan_id) || null
+      planClientId: savingPlanClientIds.get(item.saving_plan_id) || null,
+      createdAt: item.created_at
     })),
     savingPlans: records.savingPlans.map((item) => ({
       id: item.client_id,
@@ -261,7 +266,8 @@ export function fromDatabaseRecords(records) {
       target: Number(item.target_amount),
       currency: item.currency,
       note: item.note,
-      active: item.active
+      active: item.active,
+      createdAt: item.created_at
     }))
   };
 }

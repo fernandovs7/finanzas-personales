@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  deduplicateFinanceState,
+  isBulkExactDuplication
+} from "../domain/deduplicateFinanceState.js";
 import { shouldImportLocalFinanceState } from "../domain/financeSyncPolicy.js";
 import { createSupabaseFinanceRepository } from "../repositories/supabaseFinanceRepository.js";
 
@@ -51,11 +55,17 @@ export function useCloudFinanceSync({ state, setState, session }) {
 
         if (cancelled) return;
 
+        const deduplicated = deduplicateFinanceState(cloudState);
+        const shouldCleanDuplicates = isBulkExactDuplication(deduplicated);
         const nextState = {
-          ...cloudState,
+          ...(shouldCleanDuplicates ? deduplicated.state : cloudState),
           activeView: state.activeView || "dashboard"
         };
-        syncedFingerprintRef.current = financeFingerprint(nextState);
+        // When a repeated bulk import is detected, retaining the cloud
+        // fingerprint lets the existing sync flow prune only those copies.
+        syncedFingerprintRef.current = financeFingerprint(
+          shouldCleanDuplicates ? cloudState : nextState
+        );
         readyRef.current = true;
         window.localStorage.setItem(markerKey, "true");
         setState(nextState);
