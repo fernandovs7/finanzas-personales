@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Finanzas Personales</title>
+  <defs>
+    <linearGradient id="brand-red" x1="8" y1="6" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff2343"/>
+      <stop offset="0.52" stop-color="#e6002d"/>
+      <stop offset="1" stop-color="#b90020"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#brand-red)"/>
+  <circle cx="32" cy="32" r="29.25" fill="none" stroke="#fff" stroke-opacity="0.16" stroke-width="1.5"/>
+  <path d="M17.5 14.5H49L41.5 23.5H29V29H42L34.5 38H29V49.5H17.5Z" fill="#fff"/>
+</svg>

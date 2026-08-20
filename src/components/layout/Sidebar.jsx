@@ -5,6 +5,7 @@ import { categories, quickCategories, quickPayments } from "../../config/options
 import { money } from "../../utils/money.js";
 import { applySmartTextFormatting, handleCapitalizedInput } from "../../utils/text.js";
 import { useAuth } from "../../state/AuthContext.jsx";
+import { BrandMark } from "../BrandMark.jsx";
 
 export function Sidebar() {
   const { session, signOut } = useAuth();
@@ -16,7 +17,7 @@ export function Sidebar() {
     <>
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark">F</div>
+          <BrandMark className="brand-mark" />
           <div>
             <p className="eyebrow">Tu control personal</p>
             <h1>Finanzas Personales</h1>

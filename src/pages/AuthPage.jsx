@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../state/AuthContext.jsx";
+import { BrandMark } from "../components/BrandMark.jsx";
 
 function authErrorMessage(error) {
   const message = error?.message || "No pudimos completar el acceso.";
@@ -56,7 +57,7 @@ export function AuthPage() {
     <main className="auth-page">
       <section className="auth-story">
         <div className="auth-brand">
-          <span className="auth-brand-mark">F</span>
+          <BrandMark className="auth-brand-mark" />
           <span>Finanzas Personales</span>
         </div>
         <div className="auth-story-copy">
