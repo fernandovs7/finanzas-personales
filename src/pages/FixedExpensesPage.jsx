@@ -153,7 +153,9 @@ export function FixedExpensesPage() {
                                 <small>{selectedPeriodLabel}</small>
                               </span>
                             </button>
-                          ) : null}
+                          ) : (
+                            <span className="payment-status-placeholder" aria-hidden="true" />
+                          )}
                           <button
                             type="button"
                             className={`pill-button ${item.active ? "on" : "off"}`}

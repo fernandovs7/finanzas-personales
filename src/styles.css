@@ -1570,6 +1570,12 @@ select {
   border-color: rgba(18, 160, 122, 0.14);
 }
 
+.payment-status-placeholder {
+  width: 142px;
+  height: 52px;
+  flex: 0 0 142px;
+}
+
 .icon-text-btn {
   display: inline-flex;
   align-items: center;
@@ -2066,6 +2072,10 @@ select {
 
   .fixed-expense-actions {
     justify-content: flex-start;
+  }
+
+  .payment-status-placeholder {
+    display: none;
   }
 
   .history-toolbar {
