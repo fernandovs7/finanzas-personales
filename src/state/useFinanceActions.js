@@ -140,6 +140,102 @@ export function useFinanceActions({
     event.currentTarget.reset();
   }
 
+  function handleHousingItemSubmit(event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    updateState("housingItems", {
+      label: applySmartTextFormatting(form.get("label")),
+      monthlyAmountCrc: Number(form.get("monthlyAmountCrc")),
+      destinationAccount: applySmartTextFormatting(
+        form.get("destinationAccount") || "Sin asignar"
+      ),
+      active: true,
+      sortOrder: state.housingItems.length + 1
+    });
+    event.currentTarget.reset();
+  }
+
+  function updateHousingItem(id, updates) {
+    updateRecord("housingItems", id, {
+      ...updates,
+      label: applySmartTextFormatting(updates.label || "Categoría de vivienda"),
+      destinationAccount: applySmartTextFormatting(
+        updates.destinationAccount || "Sin asignar"
+      ),
+      monthlyAmountCrc: Number(updates.monthlyAmountCrc || 0)
+    });
+  }
+
+  function toggleHousingContribution(participant, period, fortnight) {
+    setState((current) => {
+      const existing = current.housingStatuses.find(
+        (item) => item.period === period && item.fortnight === fortnight
+      );
+      const field = participant === "partner" ? "partnerContributed" : "ownerContributed";
+
+      if (existing) {
+        return {
+          ...current,
+          housingStatuses: current.housingStatuses.map((item) =>
+            item.id === existing.id ? { ...item, [field]: !item[field] } : item
+          )
+        };
+      }
+
+      return {
+        ...current,
+        housingStatuses: [
+          ...current.housingStatuses,
+          {
+            id: Date.now(),
+            clientId: createClientId(),
+            period,
+            fortnight,
+            ownerContributed: participant === "owner",
+            partnerContributed: participant === "partner"
+          }
+        ]
+      };
+    });
+  }
+
+  function toggleHousingTransfer(itemClientId, period, fortnight) {
+    setState((current) => {
+      const existing = current.housingTransfers.find(
+        (item) =>
+          item.itemClientId === itemClientId &&
+          item.period === period &&
+          item.fortnight === fortnight
+      );
+
+      if (existing) {
+        return {
+          ...current,
+          housingTransfers: current.housingTransfers.map((item) =>
+            item.id === existing.id
+              ? { ...item, completed: !item.completed }
+              : item
+          )
+        };
+      }
+
+      return {
+        ...current,
+        housingTransfers: [
+          ...current.housingTransfers,
+          {
+            id: Date.now(),
+            clientId: createClientId(),
+            itemClientId,
+            period,
+            fortnight,
+            completed: true
+          }
+        ]
+      };
+    });
+  }
+
   function handleMovementSubmit(event) {
     event.preventDefault();
     const periodIncomes = state.incomes.filter(
@@ -365,5 +461,5 @@ export function useFinanceActions({
   }
 
 
-  return { handleSalarySubmit, handleFixedExpense, handleMovementSubmit, applyMovementPreset, handleLiabilitySubmit, handleSavingsSubmit, handleEditSubmit, startEditing, stopEditing, deleteRecord, toggleFixedExpense, toggleFixedExpensePaid, toggleSavingPlan };
+  return { handleSalarySubmit, handleFixedExpense, handleHousingItemSubmit, updateHousingItem, toggleHousingContribution, toggleHousingTransfer, handleMovementSubmit, applyMovementPreset, handleLiabilitySubmit, handleSavingsSubmit, handleEditSubmit, startEditing, stopEditing, deleteRecord, toggleFixedExpense, toggleFixedExpensePaid, toggleSavingPlan };
 }

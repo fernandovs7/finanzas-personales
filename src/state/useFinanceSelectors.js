@@ -12,6 +12,17 @@ import {
   totalLiabilityAmount
 } from "../domain/finance.js";
 import {
+  activeHousingItems,
+  effectiveFixedExpenses,
+  findHousingStatus,
+  housingFundFortnightAmount,
+  housingMonthlyTotal,
+  housingPersonFortnightAmount,
+  housingPersonMonthlyTotal,
+  housingTransferredAmount,
+  isHousingTransferComplete
+} from "../domain/housingFund.js";
+import {
   TODAY,
   historyGroupLabel,
   sortByDate,
@@ -51,7 +62,10 @@ export function useFinanceSelectors({
       .filter((plan) => !explicitSavings.some((item) => item.planId === plan.id))
       .map((plan) => buildGeneratedSaving(plan, period));
     const savings = sortByDate([...explicitSavings, ...generatedSavings]);
-    const fixedExpenses = state.fixedExpenses.filter((item) => item.active);
+    const fixedExpenses = effectiveFixedExpenses(
+      state.fixedExpenses,
+      state.housingItems
+    ).filter((item) => item.active);
 
     const incomeUsdTotal = incomes.reduce((sum, item) => sum + item.totalUsd, 0);
 
@@ -153,7 +167,10 @@ export function useFinanceSelectors({
   }, [state]);
 
   const fixedTotals = useMemo(() => {
-    const activeFixed = state.fixedExpenses.filter((item) => item.active);
+    const activeFixed = effectiveFixedExpenses(
+      state.fixedExpenses,
+      state.housingItems
+    ).filter((item) => item.active);
     const monthlyCRC = activeFixed
       .filter((item) => item.currency === "CRC")
       .reduce((sum, item) => sum + item.amount, 0);
@@ -165,7 +182,7 @@ export function useFinanceSelectors({
     const q1USD = splitFixed(activeFixed, "Q1", "USD");
     const q2USD = splitFixed(activeFixed, "Q2", "USD");
     return { monthlyCRC, monthlyUSD, q1CRC, q2CRC, q1USD, q2USD };
-  }, [state.fixedExpenses]);
+  }, [state.fixedExpenses, state.housingItems]);
 
   const fortnightStats = useMemo(() => {
     return ["Q1", "Q2"].map((fortnight) => {
@@ -235,7 +252,11 @@ export function useFinanceSelectors({
     const periodLiabilities = state.liabilities
       .filter((item) => toPeriod(item.date) === state.selectedPeriod);
     const reservePaymentsUsd = sumLiabilitiesForFortnight(periodLiabilities, fortnight, "USD");
-    const reserveFixedUsd = splitFixed(state.fixedExpenses, fortnight, "USD");
+    const effectiveFixed = effectiveFixedExpenses(
+      state.fixedExpenses,
+      state.housingItems
+    );
+    const reserveFixedUsd = splitFixed(effectiveFixed, fortnight, "USD");
     const reserveSavingsUsd = Number(salaryDraft.reserveSavingsUsd || 0);
     const usdToConvert = Math.max(
       Number(salaryDraft.totalUsd || 0) -
@@ -253,7 +274,68 @@ export function useFinanceSelectors({
       usdToConvert,
       convertedCrc
     };
-  }, [salaryDraft.date, salaryDraft.rate, salaryDraft.reserveSavingsUsd, salaryDraft.totalUsd, state.fixedExpenses, state.liabilities, state.selectedPeriod]);
+  }, [salaryDraft.date, salaryDraft.rate, salaryDraft.reserveSavingsUsd, salaryDraft.totalUsd, state.fixedExpenses, state.housingItems, state.liabilities, state.selectedPeriod]);
+
+  const housingSummary = useMemo(() => {
+    const items = activeHousingItems(state.housingItems).sort(
+      (a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0)
+    );
+    const monthlyTotal = housingMonthlyTotal(items);
+    const personMonthly = housingPersonMonthlyTotal(items);
+    const personFortnight = personMonthly / 2;
+    const fortnights = ["Q1", "Q2"].map((fortnight) => {
+      const status = findHousingStatus(
+        state.housingStatuses,
+        state.selectedPeriod,
+        fortnight
+      );
+      const ownerContributed = status?.ownerContributed === true;
+      const partnerContributed = status?.partnerContributed === true;
+      const gathered =
+        (ownerContributed ? personFortnight : 0) +
+        (partnerContributed ? personFortnight : 0);
+      const transferred = housingTransferredAmount(
+        items,
+        state.housingTransfers,
+        state.selectedPeriod,
+        fortnight
+      );
+
+      return {
+        fortnight,
+        ownerContributed,
+        partnerContributed,
+        gathered,
+        expected: personFortnight * 2,
+        transferred,
+        pendingTransfer: Math.max(gathered - transferred, 0),
+        completedTransfers: items.filter((item) =>
+          isHousingTransferComplete(
+            state.housingTransfers,
+            item.clientId,
+            state.selectedPeriod,
+            fortnight
+          )
+        ).length
+      };
+    });
+
+    return {
+      items,
+      monthlyTotal,
+      personMonthly,
+      personFortnight,
+      fundFortnight: monthlyTotal / 2,
+      fortnights,
+      gatheredMonth: fortnights.reduce((sum, item) => sum + item.gathered, 0),
+      transferredMonth: fortnights.reduce(
+        (sum, item) => sum + item.transferred,
+        0
+      ),
+      getPersonFortnightAmount: housingPersonFortnightAmount,
+      getFundFortnightAmount: housingFundFortnightAmount
+    };
+  }, [state.housingItems, state.housingStatuses, state.housingTransfers, state.selectedPeriod]);
 
   const movementPreview = useMemo(() => {
     const periodIncomes = state.incomes.filter(
@@ -597,6 +679,12 @@ export function useFinanceSelectors({
       description:
         "Acá administrás los gastos que registrás una sola vez y que la app reparte entre quincenas."
     },
+    housing: {
+      eyebrow: "Fondo compartido",
+      title: "Vivienda",
+      description:
+        "Acá controlás tu aporte, el depósito de Fabi y las transferencias a cada cuenta sin mezclarlos con tu saldo personal."
+    },
     liabilities: {
       eyebrow: "Planeación del periodo",
       title: "Pagos planeados",
@@ -619,5 +707,5 @@ export function useFinanceSelectors({
 
   const currentView = viewMeta[state.activeView] || viewMeta.dashboard;
 
-  return { periods, periodData, fixedTotals, fortnightStats, salaryPreview, movementPreview, movementPresets, amountPresets, matchedMovementPreset, currentFortnight, summaryContext, displayedMovements, summaryCards, latestIncome, latestMovement, savingsSummary, historySummary, groupedHistoryItems, currentView };
+  return { periods, periodData, fixedTotals, housingSummary, fortnightStats, salaryPreview, movementPreview, movementPresets, amountPresets, matchedMovementPreset, currentFortnight, summaryContext, displayedMovements, summaryCards, latestIncome, latestMovement, savingsSummary, historySummary, groupedHistoryItems, currentView };
 }

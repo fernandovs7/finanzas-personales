@@ -4,7 +4,10 @@ const FINANCE_SECTIONS = [
   "liabilities",
   "movements",
   "savings",
-  "savingPlans"
+  "savingPlans",
+  "housingItems",
+  "housingStatuses",
+  "housingTransfers"
 ];
 
 export function hasFinanceRecords(state) {

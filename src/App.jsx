@@ -6,6 +6,7 @@ import { FixedExpensesPage } from "./pages/FixedExpensesPage.jsx";
 import { PlannedPaymentsPage } from "./pages/PlannedPaymentsPage.jsx";
 import { SavingsPage } from "./pages/SavingsPage.jsx";
 import { TransactionsPage } from "./pages/TransactionsPage.jsx";
+import { HousingPage } from "./pages/HousingPage.jsx";
 import { FinanceProvider, useFinance } from "./state/FinanceContext.jsx";
 import { AuthProvider, useAuth } from "./state/AuthContext.jsx";
 import { AuthPage } from "./pages/AuthPage.jsx";
@@ -13,6 +14,7 @@ import { AuthPage } from "./pages/AuthPage.jsx";
 const pages = {
   dashboard: DashboardPage,
   fixed: FixedExpensesPage,
+  housing: HousingPage,
   liabilities: PlannedPaymentsPage,
   savings: SavingsPage,
   history: TransactionsPage

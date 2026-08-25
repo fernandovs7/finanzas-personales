@@ -32,8 +32,7 @@ export const initialState = {
     { id: 8, label: "Kolbi", category: "Servicios", amount: 12000, currency: "CRC", q1: 50, q2: 50, active: true },
     { id: 9, label: "Seguros Tarjetas", category: "Deudas", amount: 7404.6, currency: "CRC", q1: 50, q2: 50, active: true },
     { id: 10, label: "Marchamo", category: "Transporte", amount: 50000, currency: "CRC", q1: 50, q2: 50, active: true },
-    { id: 11, label: "Admin Compass", category: "Servicios", amount: 2448.94, currency: "CRC", q1: 50, q2: 50, active: true },
-    { id: 12, label: "Fabi y yo - Vivienda", category: "Vivienda", amount: 315355, currency: "CRC", q1: 50, q2: 50, active: true }
+    { id: 11, label: "Admin Compass", category: "Servicios", amount: 2448.94, currency: "CRC", q1: 50, q2: 50, active: true }
   ],
   liabilities: [
     { id: 1, date: "2026-08-15", label: "MultiMoney", category: "Deudas", amount: 54, currency: "USD", kind: "single" },
@@ -51,5 +50,17 @@ export const initialState = {
   savings: [
     { id: 1, date: "2026-08-15", target: 150, actual: 100, currency: "USD", note: "Meta agosto Q1" }
   ],
-  savingPlans: []
+  savingPlans: [],
+  housingItems: [
+    { id: 1, label: "Cable, Internet, Medidor", monthlyAmountCrc: 38470, destinationAccount: "Servicios vivienda", active: true, sortOrder: 1 },
+    { id: 2, label: "Diario", monthlyAmountCrc: 125000, destinationAccount: "Alimentación", active: true, sortOrder: 2 },
+    { id: 3, label: "Fondo de emergencia", monthlyAmountCrc: 10000, destinationAccount: "Fondo de emergencia", active: true, sortOrder: 3 },
+    { id: 4, label: "Entretenimiento", monthlyAmountCrc: 100000, destinationAccount: "Entretenimiento", active: true, sortOrder: 4 },
+    { id: 5, label: "Gasolina", monthlyAmountCrc: 145000, destinationAccount: "Transporte", active: true, sortOrder: 5 },
+    { id: 6, label: "Peajes", monthlyAmountCrc: 32240, destinationAccount: "Transporte", active: true, sortOrder: 6 },
+    { id: 7, label: "Ahorro para casa", monthlyAmountCrc: 110000, destinationAccount: "Ahorro casa", active: true, sortOrder: 7 },
+    { id: 8, label: "Pago de Luz Doña Gaby", monthlyAmountCrc: 70000, destinationAccount: "Servicios vivienda", active: true, sortOrder: 8 }
+  ],
+  housingStatuses: [],
+  housingTransfers: []
 };

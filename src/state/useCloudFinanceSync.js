@@ -15,7 +15,10 @@ function financeFingerprint(state) {
     liabilities: state.liabilities,
     movements: state.movements,
     savings: state.savings,
-    savingPlans: state.savingPlans
+    savingPlans: state.savingPlans,
+    housingItems: state.housingItems,
+    housingStatuses: state.housingStatuses,
+    housingTransfers: state.housingTransfers
   });
 }
 

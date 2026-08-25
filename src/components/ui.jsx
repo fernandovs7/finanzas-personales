@@ -3,6 +3,7 @@ import {
   IconCashBanknote,
   IconCashRegister,
   IconCreditCardPay,
+  IconHomeDollar,
   IconHomeStats,
   IconMoneybag,
   IconPigMoney,
@@ -36,6 +37,7 @@ export function Icon({ name }) {
   const icons = {
     dashboard: IconHomeStats,
     fixed: IconReceiptDollar,
+    housing: IconHomeDollar,
     liabilities: IconCreditCardPay,
     savings: IconPigMoney,
     movements: IconCashRegister,

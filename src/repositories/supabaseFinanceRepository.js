@@ -105,7 +105,10 @@ export function createSupabaseFinanceRepository(client = requireSupabase()) {
         plannedPaymentsResult,
         expensesResult,
         savingPlansResult,
-        savingEntriesResult
+        savingEntriesResult,
+        housingItemsResult,
+        housingStatusesResult,
+        housingTransfersResult
       ] = await Promise.all([
         client.from("user_settings").select("*").eq("user_id", userId).maybeSingle(),
         client.from("categories").select("*").eq("user_id", userId),
@@ -116,7 +119,10 @@ export function createSupabaseFinanceRepository(client = requireSupabase()) {
         client.from("planned_payments").select("*").eq("user_id", userId).order("due_on"),
         client.from("expenses").select("*").eq("user_id", userId).order("spent_on"),
         client.from("saving_plans").select("*").eq("user_id", userId).order("starts_on"),
-        client.from("saving_entries").select("*").eq("user_id", userId).order("saved_on")
+        client.from("saving_entries").select("*").eq("user_id", userId).order("saved_on"),
+        client.from("housing_items").select("*").eq("user_id", userId).order("sort_order"),
+        client.from("housing_fortnight_statuses").select("*").eq("user_id", userId).order("period"),
+        client.from("housing_transfers").select("*").eq("user_id", userId).order("period")
       ]);
 
       return fromDatabaseRecords({
@@ -147,6 +153,18 @@ export function createSupabaseFinanceRepository(client = requireSupabase()) {
         savingEntries: throwIfError(
           savingEntriesResult,
           "No se pudieron leer los aportes de ahorro"
+        ),
+        housingItems: throwIfError(
+          housingItemsResult,
+          "No se pudo leer el fondo de vivienda"
+        ),
+        housingStatuses: throwIfError(
+          housingStatusesResult,
+          "No se pudieron leer los aportes de vivienda"
+        ),
+        housingTransfers: throwIfError(
+          housingTransfersResult,
+          "No se pudieron leer las transferencias de vivienda"
         )
       });
   }
@@ -185,20 +203,24 @@ export function createSupabaseFinanceRepository(client = requireSupabase()) {
         records.paymentPlans
       );
       const savingPlans = await upsertRows(client, "saving_plans", records.savingPlans);
+      const housingItems = await upsertRows(client, "housing_items", records.housingItems);
 
       records = toDatabaseRecords(state, userId, {
         categoryIds,
         paymentMethodIds,
         incomeIds: idMap(incomes),
         paymentPlanIds: idMap(paymentPlans),
-        savingPlanIds: idMap(savingPlans)
+        savingPlanIds: idMap(savingPlans),
+        housingItemIds: idMap(housingItems)
       });
 
       await Promise.all([
         upsertRows(client, "fixed_expenses", records.fixedExpenses),
         upsertRows(client, "planned_payments", records.plannedPayments),
         upsertRows(client, "expenses", records.expenses),
-        upsertRows(client, "saving_entries", records.savingEntries)
+        upsertRows(client, "saving_entries", records.savingEntries),
+        upsertRows(client, "housing_fortnight_statuses", records.housingStatuses),
+        upsertRows(client, "housing_transfers", records.housingTransfers)
       ]);
 
       return load();
@@ -216,6 +238,18 @@ export function createSupabaseFinanceRepository(client = requireSupabase()) {
 
     // Dependents are pruned before their parent rows to preserve foreign keys.
     await pruneRows(client, "expenses", userId, state.movements.map((item) => item.clientId));
+    await pruneRows(
+      client,
+      "housing_transfers",
+      userId,
+      state.housingTransfers.map((item) => item.clientId)
+    );
+    await pruneRows(
+      client,
+      "housing_fortnight_statuses",
+      userId,
+      state.housingStatuses.map((item) => item.clientId)
+    );
     await pruneRows(
       client,
       "saving_entries",
@@ -241,6 +275,12 @@ export function createSupabaseFinanceRepository(client = requireSupabase()) {
       state.savingPlans.map((item) => item.clientId)
     );
     await pruneRows(client, "planned_payment_plans", userId, paymentPlanClientIds);
+    await pruneRows(
+      client,
+      "housing_items",
+      userId,
+      state.housingItems.map((item) => item.clientId)
+    );
     await pruneRows(client, "incomes", userId, state.incomes.map((item) => item.clientId));
 
     return load();

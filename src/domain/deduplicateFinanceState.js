@@ -4,7 +4,10 @@ const FINANCE_SECTIONS = [
   "liabilities",
   "movements",
   "savings",
-  "savingPlans"
+  "savingPlans",
+  "housingItems",
+  "housingStatuses",
+  "housingTransfers"
 ];
 
 function signature(values) {
@@ -67,6 +70,27 @@ const sectionSignatures = {
       item.currency,
       item.note || "",
       item.active !== false
+    ]),
+  housingItems: (item) =>
+    signature([
+      item.label,
+      Number(item.monthlyAmountCrc || 0),
+      item.destinationAccount || "",
+      item.active !== false
+    ]),
+  housingStatuses: (item) =>
+    signature([
+      item.period,
+      item.fortnight,
+      item.ownerContributed === true,
+      item.partnerContributed === true
+    ]),
+  housingTransfers: (item) =>
+    signature([
+      item.itemClientId,
+      item.period,
+      item.fortnight,
+      item.completed === true
     ])
 };
 

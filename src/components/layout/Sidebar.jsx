@@ -29,6 +29,7 @@ export function Sidebar() {
           {[
             ["dashboard", "Dashboard"],
             ["fixed", "Gastos fijos"],
+            ["housing", "Vivienda"],
             ["liabilities", "Pagos planeados"],
             ["savings", "Ahorro"],
             ["history", "Transacciones"]

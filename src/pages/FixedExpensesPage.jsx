@@ -12,7 +12,9 @@ import { applySmartTextFormatting, handleCapitalizedInput } from "../utils/text.
 export function FixedExpensesPage() {
   const {
     state,
+    setState,
     fixedTotals,
+    housingSummary,
     handleFixedExpense,
     toggleFixedExpense,
     toggleFixedExpensePaid,
@@ -112,6 +114,30 @@ export function FixedExpensesPage() {
               </form>
 
               <div className="list-table">
+                {housingSummary.personMonthly > 0 ? (
+                  <article className="list-card action-card fixed-expense-card housing-linked-fixed-card">
+                    <div>
+                      <div className="title">Aporte Vivienda compartida</div>
+                      <div className="muted">
+                        Vivienda • 50% Q1 / 50% Q2 • Calculado automáticamente
+                      </div>
+                    </div>
+                    <strong>{money(housingSummary.personMonthly, "CRC")}</strong>
+                    <div>CRC</div>
+                    <div className="fixed-expense-actions">
+                      <span className="pill green">Conectado a Vivienda</span>
+                      <button
+                        type="button"
+                        className="ghost-btn"
+                        onClick={() =>
+                          setState((current) => ({ ...current, activeView: "housing" }))
+                        }
+                      >
+                        Ver detalle
+                      </button>
+                    </div>
+                  </article>
+                ) : null}
                 {state.fixedExpenses.length > 0 ? (
                   state.fixedExpenses.map((item) => {
                     const isEditing =
@@ -312,11 +338,11 @@ export function FixedExpensesPage() {
                       </article>
                     );
                   })
-                ) : (
+                ) : housingSummary.personMonthly <= 0 ? (
                   <div className="empty-state">
                     Todavía no tenés gastos fijos registrados.
                   </div>
-                )}
+                ) : null}
               </div>
             </article>
           </section>

@@ -60,15 +60,24 @@ export function normalizeStateData(data) {
   );
   const paymentPlanClientIds = new Map();
 
+  const housingItems = (data.housingItems || []).map((item) =>
+    withClientId(capitalizeFields(item, ["label", "destinationAccount"]))
+  );
+
   return {
     ...data,
     incomes: (data.incomes || []).map((item) =>
       withClientId(capitalizeFields(item, ["note"]))
     ),
-    fixedExpenses: (data.fixedExpenses || []).map((item) => ({
-      ...withClientId(capitalizeFields(item, ["label"])),
-      paidPeriods: Array.isArray(item.paidPeriods) ? item.paidPeriods : []
-    })),
+    fixedExpenses: (data.fixedExpenses || [])
+      .filter(
+        (item) =>
+          item.label?.trim().toLocaleLowerCase("es-CR") !== "fabi y yo - vivienda"
+      )
+      .map((item) => ({
+        ...withClientId(capitalizeFields(item, ["label"])),
+        paidPeriods: Array.isArray(item.paidPeriods) ? item.paidPeriods : []
+      })),
     liabilities: (data.liabilities || []).map((item) => {
       const normalized = withClientId(capitalizeFields(item, ["label"]));
       if (!normalized.planGroupId) return normalized;
@@ -96,7 +105,10 @@ export function normalizeStateData(data) {
           normalized.planClientId || savingPlanClientIds.get(normalized.planId) || null
       };
     }),
-    savingPlans
+    savingPlans,
+    housingItems,
+    housingStatuses: (data.housingStatuses || []).map(withClientId),
+    housingTransfers: (data.housingTransfers || []).map(withClientId)
   };
 }
 

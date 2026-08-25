@@ -1,5 +1,6 @@
 import { createClientId } from "../utils/id.js";
 import { sortByDate, toFortnight, toPeriod } from "../utils/date.js";
+import { isLegacyHousingFixedExpense } from "../domain/housingFund.js";
 
 function lookupReferenceId(references, value) {
   if (!value) return null;
@@ -70,6 +71,7 @@ export function toDatabaseRecords(state, userId, references = {}) {
   const incomeIds = references.incomeIds || new Map();
   const paymentPlanIds = references.paymentPlanIds || new Map();
   const savingPlanIds = references.savingPlanIds || new Map();
+  const housingItemIds = references.housingItemIds || new Map();
 
   return {
     settings: {
@@ -158,7 +160,34 @@ export function toDatabaseRecords(state, userId, references = {}) {
       amount: Number(item.amount),
       currency: item.currency || "CRC",
       bag_fortnight: item.bagFortnight || toFortnight(item.date)
-    }))
+    })),
+    housingItems: (state.housingItems || []).map((item) => ({
+      user_id: userId,
+      client_id: item.clientId,
+      label: item.label,
+      monthly_amount_crc: Number(item.monthlyAmountCrc || 0),
+      destination_account: item.destinationAccount || "Sin asignar",
+      active: item.active !== false,
+      sort_order: Number(item.sortOrder || 0)
+    })),
+    housingStatuses: (state.housingStatuses || []).map((item) => ({
+      user_id: userId,
+      client_id: item.clientId,
+      period: `${item.period}-01`,
+      fortnight: item.fortnight,
+      owner_contributed: item.ownerContributed === true,
+      partner_contributed: item.partnerContributed === true
+    })),
+    housingTransfers: (state.housingTransfers || [])
+      .map((item) => ({
+        user_id: userId,
+        client_id: item.clientId,
+        housing_item_id: housingItemIds.get(item.itemClientId) || null,
+        period: `${item.period}-01`,
+        fortnight: item.fortnight,
+        completed: item.completed === true
+      }))
+      .filter((item) => item.housing_item_id)
   };
 }
 
@@ -183,6 +212,9 @@ export function fromDatabaseRecords(records) {
   const savingPlanClientIds = new Map(
     records.savingPlans.map((item) => [item.id, item.client_id])
   );
+  const housingItemClientIds = new Map(
+    (records.housingItems || []).map((item) => [item.id, item.client_id])
+  );
 
   return {
     selectedPeriod:
@@ -200,20 +232,22 @@ export function fromDatabaseRecords(records) {
       note: item.note,
       createdAt: item.created_at
     })),
-    fixedExpenses: records.fixedExpenses.map((item) => ({
-      id: item.client_id,
-      clientId: item.client_id,
-      serverId: item.id,
-      label: item.label,
-      category: categoryNames.get(item.category_id) || "Otros",
-      amount: Number(item.amount),
-      currency: item.currency,
-      q1: Number(item.q1_percent),
-      q2: Number(item.q2_percent),
-      active: item.active,
-      paidPeriods: item.paid_periods || [],
-      createdAt: item.created_at
-    })),
+    fixedExpenses: records.fixedExpenses
+      .map((item) => ({
+        id: item.client_id,
+        clientId: item.client_id,
+        serverId: item.id,
+        label: item.label,
+        category: categoryNames.get(item.category_id) || "Otros",
+        amount: Number(item.amount),
+        currency: item.currency,
+        q1: Number(item.q1_percent),
+        q2: Number(item.q2_percent),
+        active: item.active,
+        paidPeriods: item.paid_periods || [],
+        createdAt: item.created_at
+      }))
+      .filter((item) => !isLegacyHousingFixedExpense(item)),
     liabilities: records.plannedPayments.map((item) => ({
       id: item.client_id,
       clientId: item.client_id,
@@ -269,6 +303,37 @@ export function fromDatabaseRecords(records) {
       currency: item.currency,
       note: item.note,
       active: item.active,
+      createdAt: item.created_at
+    })),
+    housingItems: (records.housingItems || []).map((item) => ({
+      id: item.client_id,
+      clientId: item.client_id,
+      serverId: item.id,
+      label: item.label,
+      monthlyAmountCrc: Number(item.monthly_amount_crc),
+      destinationAccount: item.destination_account,
+      active: item.active,
+      sortOrder: Number(item.sort_order || 0),
+      createdAt: item.created_at
+    })),
+    housingStatuses: (records.housingStatuses || []).map((item) => ({
+      id: item.client_id,
+      clientId: item.client_id,
+      serverId: item.id,
+      period: item.period.slice(0, 7),
+      fortnight: item.fortnight,
+      ownerContributed: item.owner_contributed,
+      partnerContributed: item.partner_contributed,
+      createdAt: item.created_at
+    })),
+    housingTransfers: (records.housingTransfers || []).map((item) => ({
+      id: item.client_id,
+      clientId: item.client_id,
+      serverId: item.id,
+      itemClientId: housingItemClientIds.get(item.housing_item_id) || null,
+      period: item.period.slice(0, 7),
+      fortnight: item.fortnight,
+      completed: item.completed,
       createdAt: item.created_at
     }))
   };
