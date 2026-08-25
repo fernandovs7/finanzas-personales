@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useFinance } from "../state/FinanceContext.jsx";
 import { ListRow, SectionTitle, SummaryCard } from "../components/ui.jsx";
 import { SelectField } from "../components/SelectField.jsx";
@@ -9,6 +10,17 @@ import { toFortnight } from "../utils/date.js";
 
 export function PlannedPaymentsPage() {
   const { state, periodData, liabilityDraft, setLiabilityDraft, handleLiabilitySubmit } = useFinance();
+  const [fortnightFilter, setFortnightFilter] = useState("all");
+  const fortnightCounts = {
+    all: periodData.liabilities.length,
+    Q1: periodData.liabilities.filter((item) => toFortnight(item.date) === "Q1").length,
+    Q2: periodData.liabilities.filter((item) => toFortnight(item.date) === "Q2").length
+  };
+  const filteredLiabilities =
+    fortnightFilter === "all"
+      ? periodData.liabilities
+      : periodData.liabilities.filter((item) => toFortnight(item.date) === fortnightFilter);
+
   return (
     <>
         {state.activeView === "liabilities" ? (
@@ -173,29 +185,70 @@ export function PlannedPaymentsPage() {
                   Guardar pago planeado
                 </button>
               </form>
+
+              <div className="fortnight-filter-bar">
+                <div>
+                  <p className="eyebrow">Detalle del periodo</p>
+                  <h4>
+                    {fortnightFilter === "all"
+                      ? "Pagos de todo el mes"
+                      : `Pagos de ${fortnightFilter}`}
+                  </h4>
+                  <p>
+                    {filteredLiabilities.length === 1
+                      ? "Mostrando 1 pago planeado."
+                      : `Mostrando ${filteredLiabilities.length} pagos planeados.`}
+                  </p>
+                </div>
+                <div className="fortnight-filter-options" role="group" aria-label="Filtrar pagos por quincena">
+                  {[
+                    ["all", "Todo el mes"],
+                    ["Q1", "Q1"],
+                    ["Q2", "Q2"]
+                  ].map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={`chip-button ${fortnightFilter === value ? "active" : ""}`}
+                      aria-pressed={fortnightFilter === value}
+                      onClick={() => setFortnightFilter(value)}
+                    >
+                      {label}
+                      <span className="chip-count">{fortnightCounts[value]}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="list-table">
-                {periodData.liabilities.map((item) => (
-                  <ListRow
-                    key={item.id}
-                    title={item.label}
-                    subtitle={
-                      item.kind === "installment"
-                        ? `${item.category} • ${item.date} • ${toFortnight(item.date)} • Cuota ${item.installmentCurrent}/${item.installmentTotal} • Total financiado ${money(totalLiabilityAmount(item), item.currency)}`
-                        : `${item.category} • ${item.date} • ${toFortnight(item.date)} • Pago único`
-                    }
-                    amount={
-                      item.kind === "installment"
-                        ? `Cuota mensual ${money(monthlyLiabilityAmount(item), item.currency)}`
-                        : money(item.amount, item.currency)
-                    }
-                    amount2={
-                      item.kind === "installment"
-                        ? `Reserva q. ${money(reservePerFortnightAmount(item), item.currency)}`
-                        : item.currency
-                    }
-                    badge={<span className="pill orange">Pago planeado</span>}
-                  />
-                ))}
+                {filteredLiabilities.length > 0 ? (
+                  filteredLiabilities.map((item) => (
+                    <ListRow
+                      key={item.id}
+                      title={item.label}
+                      subtitle={
+                        item.kind === "installment"
+                          ? `${item.category} • ${item.date} • ${toFortnight(item.date)} • Cuota ${item.installmentCurrent}/${item.installmentTotal} • Total financiado ${money(totalLiabilityAmount(item), item.currency)}`
+                          : `${item.category} • ${item.date} • ${toFortnight(item.date)} • Pago único`
+                      }
+                      amount={
+                        item.kind === "installment"
+                          ? `Cuota mensual ${money(monthlyLiabilityAmount(item), item.currency)}`
+                          : money(item.amount, item.currency)
+                      }
+                      amount2={
+                        item.kind === "installment"
+                          ? `Reserva q. ${money(reservePerFortnightAmount(item), item.currency)}`
+                          : item.currency
+                      }
+                      badge={<span className="pill orange">Pago planeado</span>}
+                    />
+                  ))
+                ) : (
+                  <div className="empty-state">
+                    No hay pagos planeados en {fortnightFilter} para este periodo.
+                  </div>
+                )}
               </div>
             </article>
           </section>
