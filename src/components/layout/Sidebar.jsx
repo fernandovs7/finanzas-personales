@@ -150,7 +150,10 @@ export function Sidebar() {
           </CollapsibleContent>
         </section>
 
-        <section className="panel soft-panel collapsible-panel">
+        <section
+          className="panel soft-panel collapsible-panel"
+          id="quick-expense-form"
+        >
           <button
             type="button"
             className={`panel-toggle ${openForm === "movement" ? "active" : ""}`}

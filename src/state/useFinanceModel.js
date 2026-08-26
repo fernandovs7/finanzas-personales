@@ -5,12 +5,29 @@ import { useFinanceActions } from "./useFinanceActions.js";
 import { useFinanceSelectors } from "./useFinanceSelectors.js";
 import { useCloudFinanceSync } from "./useCloudFinanceSync.js";
 import { useAuth } from "./AuthContext.jsx";
+import {
+  clearExpenseDeepLink,
+  parseExpenseDeepLink
+} from "../domain/expenseDeepLink.js";
+
+const DEFAULT_MOVEMENT_DRAFT = {
+  date: TODAY,
+  label: "",
+  category: "Supermercado",
+  amount: "",
+  payment: "Tarjeta BAC Personal"
+};
 
 export function useFinanceModel() {
   const { session } = useAuth();
+  const [initialExpenseDraft] = useState(() =>
+    parseExpenseDeepLink(window.location.search, DEFAULT_MOVEMENT_DRAFT)
+  );
   const [state, setState] = useState(readState);
   const [summaryMode, setSummaryMode] = useState("fortnight");
-  const [openForm, setOpenForm] = useState("");
+  const [openForm, setOpenForm] = useState(
+    initialExpenseDraft ? "movement" : ""
+  );
   const [historyFilter, setHistoryFilter] = useState("all");
   const [historySearch, setHistorySearch] = useState("");
   const [editingRecord, setEditingRecord] = useState(null);
@@ -22,13 +39,9 @@ export function useFinanceModel() {
     reserveSavingsUsd: "0",
     note: ""
   });
-  const [movementDraft, setMovementDraft] = useState({
-    date: TODAY,
-    label: "",
-    category: "Supermercado",
-    amount: "",
-    payment: "Tarjeta BAC Personal"
-  });
+  const [movementDraft, setMovementDraft] = useState(
+    initialExpenseDraft || DEFAULT_MOVEMENT_DRAFT
+  );
   const [liabilityDraft, setLiabilityDraft] = useState({
     date: TODAY,
     label: "",
@@ -47,6 +60,23 @@ export function useFinanceModel() {
     currency: "USD",
     note: ""
   });
+
+  useEffect(() => {
+    if (!initialExpenseDraft) return;
+
+    setState((current) => ({ ...current, activeView: "dashboard" }));
+    window.history.replaceState(
+      {},
+      "",
+      clearExpenseDeepLink(window.location.href)
+    );
+
+    window.setTimeout(() => {
+      document
+        .getElementById("quick-expense-form")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  }, [initialExpenseDraft]);
 
   useEffect(() => {
     saveState(state);
