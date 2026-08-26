@@ -70,12 +70,6 @@ export function useFinanceModel() {
       "",
       clearExpenseDeepLink(window.location.href)
     );
-
-    window.setTimeout(() => {
-      document
-        .getElementById("quick-expense-form")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 150);
   }, [initialExpenseDraft]);
 
   useEffect(() => {

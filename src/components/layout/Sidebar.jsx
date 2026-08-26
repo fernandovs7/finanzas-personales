@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useFinance } from "../../state/FinanceContext.jsx";
 import { Icon } from "../ui.jsx";
 import { SelectField } from "../SelectField.jsx";
@@ -14,6 +15,19 @@ export function Sidebar() {
       salaryDraft, setSalaryDraft, movementDraft, setMovementDraft, salaryPreview,
       movementPreview, movementPresets, amountPresets, matchedMovementPreset,
       handleSalarySubmit, handleMovementSubmit, applyMovementPreset, syncStatus } = useFinance();
+
+  useEffect(() => {
+    if (openForm !== "movement") return undefined;
+
+    const frame = window.requestAnimationFrame(() => {
+      document
+        .getElementById("quick-expense-form")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [openForm]);
+
   return (
     <>
       <aside className="sidebar">
