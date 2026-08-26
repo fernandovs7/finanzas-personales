@@ -118,6 +118,7 @@ export function useFinanceModel() {
     setSalaryDraft,
     movementDraft,
     setMovementDraft,
+    setOpenForm,
     liabilityDraft,
     setLiabilityDraft,
     savingsDraft,

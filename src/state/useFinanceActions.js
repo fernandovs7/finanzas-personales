@@ -16,6 +16,7 @@ export function useFinanceActions({
   setSalaryDraft,
   movementDraft,
   setMovementDraft,
+  setOpenForm,
   liabilityDraft,
   setLiabilityDraft,
   savingsDraft,
@@ -259,6 +260,7 @@ export function useFinanceActions({
       amount: "",
       payment: "Tarjeta BAC Personal"
     });
+    setOpenForm("");
   }
 
   function applyMovementPreset(preset, options = { includeAmount: true }) {
