@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { Sidebar } from "./components/layout/Sidebar.jsx";
 import { PageHeader } from "./components/layout/PageHeader.jsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.jsx";
@@ -23,6 +24,10 @@ const pages = {
 function FinanceApplication() {
   const { state, syncStatus, syncError } = useFinance();
   const ActivePage = pages[state.activeView] || DashboardPage;
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [state.activeView]);
 
   if (syncStatus === "loading") {
     return (
