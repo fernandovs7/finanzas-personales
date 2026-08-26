@@ -575,7 +575,7 @@ export function useFinanceSelectors({
         ...item,
         section: "movements",
         type: "movement",
-        typeLabel: "Gasto real",
+        typeLabel: "Gasto",
         pillClass: "green",
         title: item.label,
         subtitle: `${item.category} • ${item.payment || "Sin medio"} • Bolsa ${item.bagFortnight}`,
@@ -669,7 +669,7 @@ export function useFinanceSelectors({
   const viewMeta = {
     dashboard: {
       eyebrow: "Resumen del periodo",
-      title: "Agosto con bolsa activa y gastos reales",
+      title: "Agosto con bolsa activa y gastos",
       description:
         "Acá ves cómo se mueve tu plata entre lo que apartás, lo que pasás a colones y lo que realmente te queda disponible."
     },

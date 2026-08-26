@@ -145,7 +145,7 @@ export function createSupabaseFinanceRepository(client = requireSupabase()) {
           plannedPaymentsResult,
           "No se pudieron leer los pagos planeados"
         ),
-        expenses: throwIfError(expensesResult, "No se pudieron leer los gastos reales"),
+        expenses: throwIfError(expensesResult, "No se pudieron leer los gastos"),
         savingPlans: throwIfError(
           savingPlansResult,
           "No se pudieron leer los planes de ahorro"

@@ -46,7 +46,7 @@ export function FixedExpensesPage() {
               <SectionTitle
                 eyebrow="Se registran una sola vez"
                 title="Gastos fijos"
-                description="Siguen activos en la lógica, pero sin mezclar todavía gastos reales para que puedas comparar contra el Excel."
+                description="Siguen activos en la lógica, pero sin mezclar todavía gastos para que puedas comparar contra el Excel."
               />
 
               <section className="summary-grid compact-grid">

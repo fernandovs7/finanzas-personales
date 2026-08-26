@@ -27,7 +27,7 @@ export function DashboardPage() {
                 <p className="hero-balance-note">
                   {summaryMode === "fortnight"
                     ? "Este es el monto que te queda libre en la bolsa que estás usando ahorita."
-                    : "Este es el monto que te queda libre en todo el mes después de separar pagos, fijos, ahorro y gastos reales."}
+                    : "Este es el monto que te queda libre en todo el mes después de separar pagos, fijos, ahorro y gastos."}
                 </p>
               </div>
 
@@ -184,7 +184,7 @@ export function DashboardPage() {
                         <div className="fortnight-stat"><span>Pasaste a colones</span><strong>{money(item.incomeCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Fijos</span><strong>{money(item.fixedCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Pagos planeados</span><strong>{money(item.liabilitiesCrc, "CRC")}</strong></div>
-                        <div className="fortnight-stat"><span>Gastado real</span><strong>{money(item.movementCrc, "CRC")}</strong></div>
+                        <div className="fortnight-stat"><span>Gastado</span><strong>{money(item.movementCrc, "CRC")}</strong></div>
                       </div>
 
                       <div className="fortnight-panel">
@@ -245,7 +245,7 @@ export function DashboardPage() {
             <article className="panel wide">
               <SectionTitle
                 eyebrow="Ya descontados del disponible"
-                title={summaryMode === "fortnight" ? `Gastos reales de ${summaryContext.label}` : "Gastos reales del mes"}
+                title={summaryMode === "fortnight" ? `Gastos de ${summaryContext.label}` : "Gastos del mes"}
                 description="Cada gasto conserva su fecha real, pero se rebaja de la bolsa activa que le toca."
               />
               <div className="list-table">
@@ -257,12 +257,12 @@ export function DashboardPage() {
                       subtitle={`${item.date} • ${item.category} • ${item.payment || "Sin medio"}`}
                       amount={money(item.amount, item.currency)}
                       amount2={`Bolsa ${item.bagFortnight}`}
-                      badge={<span className="pill blue">Gasto real</span>}
+                      badge={<span className="pill blue">Gasto</span>}
                     />
                   ))
                 ) : (
                   <div className="empty-state">
-                    Todavía no tenés gastos reales registrados en esta vista.
+                    Todavía no tenés gastos registrados en esta vista.
                   </div>
                 )}
               </div>

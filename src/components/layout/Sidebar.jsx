@@ -30,7 +30,7 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="sidebar">
+      <aside className={`sidebar ${openForm ? "has-open-form" : ""}`}>
         <div className="brand">
           <BrandMark className="brand-mark" />
           <div>
@@ -41,25 +41,31 @@ export function Sidebar() {
 
         <nav className="nav">
           {[
-            ["dashboard", "Dashboard"],
-            ["fixed", "Gastos fijos"],
-            ["housing", "Vivienda"],
-            ["liabilities", "Pagos planeados"],
-            ["savings", "Ahorro"],
-            ["history", "Transacciones"]
-          ].map(([key, label]) => (
+            ["dashboard", "Dashboard", "Inicio"],
+            ["fixed", "Gastos fijos", "Fijos"],
+            ["housing", "Vivienda", "Vivienda"],
+            ["liabilities", "Pagos planeados", "Pagos"],
+            ["savings", "Ahorro", "Ahorro"],
+            ["history", "Transacciones", "Historial"]
+          ].map(([key, label, mobileLabel]) => (
             <button
               key={key}
               className={`nav-item ${state.activeView === key ? "active" : ""}`}
               onClick={() => setState((current) => ({ ...current, activeView: key }))}
+              aria-label={label}
             >
               <Icon name={key} />
-              {label}
+              <span className="nav-label nav-label-desktop">{label}</span>
+              <span className="nav-label nav-label-mobile">{mobileLabel}</span>
             </button>
           ))}
         </nav>
 
-        <section className="panel soft-panel collapsible-panel">
+        <section
+          className={`panel soft-panel collapsible-panel mobile-quick-panel ${
+            openForm === "salary" ? "is-open" : ""
+          }`}
+        >
           <button
             type="button"
             className={`panel-toggle ${openForm === "salary" ? "active" : ""}`}
@@ -165,7 +171,9 @@ export function Sidebar() {
         </section>
 
         <section
-          className="panel soft-panel collapsible-panel"
+          className={`panel soft-panel collapsible-panel mobile-quick-panel ${
+            openForm === "movement" ? "is-open" : ""
+          }`}
           id="quick-expense-form"
         >
           <button
@@ -174,11 +182,11 @@ export function Sidebar() {
             onClick={() => setOpenForm((current) => (current === "movement" ? "" : "movement"))}
           >
             <div>
-              <p className="panel-label">Registrar gasto real</p>
+              <p className="panel-label">Registrar gasto</p>
               <p className="panel-toggle-copy">
                 {latestMovement
                   ? `${latestMovement.date} • ${latestMovement.label} • ${money(latestMovement.amount, "CRC")}`
-                  : "Guardá gastos reales en colones y descontalos de la bolsa activa."}
+                  : "Guardá gastos en colones y descontalos de la bolsa activa."}
               </p>
             </div>
             <span className="panel-toggle-icon">{openForm === "movement" ? "−" : "+"}</span>
@@ -347,7 +355,7 @@ export function Sidebar() {
               <span>La app lo descuenta de la bolsa activa que corresponda a esa fecha.</span>
             </div>
             <button className="primary-btn" type="submit">
-              Guardar gasto real
+              Guardar gasto
             </button>
             </form>
           </CollapsibleContent>

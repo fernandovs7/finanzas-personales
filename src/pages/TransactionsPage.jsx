@@ -17,7 +17,7 @@ export function TransactionsPage() {
               <SectionTitle
                 eyebrow="Para corregir sin enredos"
                 title="Transacciones del periodo"
-                description="Acá podés revisar, editar o borrar ingresos, pagos planeados, gastos reales y ahorro del mes seleccionado."
+                description="Acá podés revisar, editar o borrar ingresos, pagos planeados, gastos y ahorro del mes seleccionado."
               />
               <section className="summary-grid compact-grid">
                 <SummaryCard
@@ -26,9 +26,9 @@ export function TransactionsPage() {
                   hint="La cantidad cambia según el filtro y la búsqueda que tengás activa."
                 />
                 <SummaryCard
-                  title="Gastos reales CRC"
+                  title="Gastos CRC"
                   value={money(historySummary.movementCrc, "CRC")}
-                  hint={`${historySummary.movementCount} gastos reales cargados en este periodo.`}
+                  hint={`${historySummary.movementCount} gastos cargados en este periodo.`}
                 />
                 <SummaryCard
                   title="Medio más usado"
@@ -65,7 +65,7 @@ export function TransactionsPage() {
                   ["all", "Todo", historySummary.recordCount],
                   ["income", "Ingresos", periodData.incomes.length],
                   ["liability", "Pagos planeados", periodData.liabilities.length],
-                  ["movement", "Gastos reales", periodData.movements.length],
+                  ["movement", "Gastos", periodData.movements.length],
                   ["saving", "Ahorro", periodData.savings.length]
                 ].map(([value, label, count]) => (
                   <button
