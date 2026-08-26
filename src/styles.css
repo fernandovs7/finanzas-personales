@@ -2204,7 +2204,7 @@ select {
     minmax(112px, 0.75fr)
     minmax(150px, 1fr)
     minmax(130px, 0.9fr)
-    auto;
+    minmax(260px, max-content);
   gap: 14px;
   align-items: center;
 }
