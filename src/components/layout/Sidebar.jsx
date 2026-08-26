@@ -8,6 +8,7 @@ import { applySmartTextFormatting, handleCapitalizedInput } from "../../utils/te
 import { useAuth } from "../../state/AuthContext.jsx";
 import { BrandMark } from "../BrandMark.jsx";
 import { CollapsibleContent } from "../CollapsibleContent.jsx";
+import { ThemeToggle } from "../ThemeToggle.jsx";
 
 export function Sidebar() {
   const { session, signOut } = useAuth();
@@ -37,6 +38,7 @@ export function Sidebar() {
             <p className="eyebrow">Tu control personal</p>
             <h1>Finanzas Personales</h1>
           </div>
+          <ThemeToggle />
         </div>
 
         <nav className="nav">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../state/AuthContext.jsx";
 import { BrandMark } from "../components/BrandMark.jsx";
+import { ThemeToggle } from "../components/ThemeToggle.jsx";
 
 function authErrorMessage(error) {
   const message = error?.message || "No pudimos completar el acceso.";
@@ -55,6 +56,7 @@ export function AuthPage() {
 
   return (
     <main className="auth-page">
+      <ThemeToggle className="auth-theme-toggle" />
       <section className="auth-story">
         <div className="auth-brand">
           <BrandMark className="auth-brand-mark" />
