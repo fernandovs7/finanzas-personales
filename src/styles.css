@@ -1295,6 +1295,10 @@ select {
   gap: 24px;
 }
 
+.dashboard-bags .fortnight-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .breakdown-block {
   padding: 14px 16px 8px;
   border-radius: 22px;
@@ -3210,6 +3214,10 @@ select {
   .dual-breakdown,
   .category-row,
   .list-card {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-bags .fortnight-grid {
     grid-template-columns: 1fr;
   }
 

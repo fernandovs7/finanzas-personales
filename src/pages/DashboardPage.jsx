@@ -123,7 +123,7 @@ export function DashboardPage() {
 
         {state.activeView === "dashboard" ? (
           <section className="dashboard-grid">
-            <article className="panel spotlight">
+            <article className="panel spotlight dashboard-overview wide">
               <SectionTitle
                 eyebrow="Panorama del mes"
                 title={`Resumen de ${periodLabel(state.selectedPeriod)}`}
@@ -163,7 +163,7 @@ export function DashboardPage() {
               </div>
             </article>
 
-            <article className="panel">
+            <article className="panel dashboard-bags wide">
               <SectionTitle eyebrow="Bolsas" title="Disponible por bolsa" />
               <div className="fortnight-grid">
                 {fortnightStats.map((item) => (
