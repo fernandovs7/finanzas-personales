@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   deduplicateFinanceState,
   isBulkExactDuplication
@@ -25,6 +25,7 @@ function financeFingerprint(state) {
 export function useCloudFinanceSync({ state, setState, session }) {
   const [syncStatus, setSyncStatus] = useState(session ? "loading" : "local");
   const [syncError, setSyncError] = useState("");
+  const [lastSyncedAt, setLastSyncedAt] = useState(null);
   const readyRef = useRef(false);
   const syncedFingerprintRef = useRef("");
 
@@ -33,6 +34,7 @@ export function useCloudFinanceSync({ state, setState, session }) {
       readyRef.current = false;
       syncedFingerprintRef.current = "";
       setSyncStatus("local");
+      setLastSyncedAt(null);
       return undefined;
     }
 
@@ -74,6 +76,7 @@ export function useCloudFinanceSync({ state, setState, session }) {
         window.localStorage.setItem(markerKey, "true");
         setState(nextState);
         setSyncStatus("synced");
+        setLastSyncedAt(new Date().toISOString());
       } catch (error) {
         if (cancelled) return;
         console.error("No se pudo sincronizar con Supabase", error);
@@ -104,6 +107,7 @@ export function useCloudFinanceSync({ state, setState, session }) {
         await retryTransientAuthTiming(() => repository.syncState(state));
         syncedFingerprintRef.current = nextFingerprint;
         setSyncStatus("synced");
+        setLastSyncedAt(new Date().toISOString());
       } catch (error) {
         console.error("No se pudieron guardar los cambios en Supabase", error);
         setSyncError(error.message || "No se pudieron guardar los cambios.");
@@ -114,5 +118,24 @@ export function useCloudFinanceSync({ state, setState, session }) {
     return () => window.clearTimeout(timeoutId);
   }, [state, session?.user?.id]);
 
-  return { syncStatus, syncError };
+  const syncNow = useCallback(async () => {
+    if (!session?.user || !readyRef.current) return;
+
+    const repository = createSupabaseFinanceRepository();
+    setSyncStatus("syncing");
+    setSyncError("");
+
+    try {
+      await retryTransientAuthTiming(() => repository.syncState(state));
+      syncedFingerprintRef.current = financeFingerprint(state);
+      setSyncStatus("synced");
+      setLastSyncedAt(new Date().toISOString());
+    } catch (error) {
+      console.error("No se pudieron actualizar los datos en Supabase", error);
+      setSyncError(error.message || "No se pudieron actualizar los datos.");
+      setSyncStatus("error");
+    }
+  }, [state, session?.user]);
+
+  return { syncStatus, syncError, lastSyncedAt, syncNow };
 }

@@ -9,13 +9,22 @@ import { useAuth } from "../../state/AuthContext.jsx";
 import { BrandMark } from "../BrandMark.jsx";
 import { CollapsibleContent } from "../CollapsibleContent.jsx";
 import { ThemeToggle } from "../ThemeToggle.jsx";
+import { IconRefresh } from "@tabler/icons-react";
 
 export function Sidebar() {
   const { session, signOut } = useAuth();
   const { state, setState, openForm, setOpenForm, latestIncome, latestMovement,
       salaryDraft, setSalaryDraft, movementDraft, setMovementDraft, salaryPreview,
       movementPreview, movementPresets, amountPresets, matchedMovementPreset,
-      handleSalarySubmit, handleMovementSubmit, applyMovementPreset, syncStatus } = useFinance();
+      handleSalarySubmit, handleMovementSubmit, applyMovementPreset, syncStatus,
+      lastSyncedAt, syncNow } = useFinance();
+
+  const lastSyncLabel = lastSyncedAt
+    ? `Actualizado a las ${new Intl.DateTimeFormat("es-CR", {
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date(lastSyncedAt))}`
+    : "Actualizando datos...";
 
   useEffect(() => {
     if (openForm !== "movement") return undefined;
@@ -367,12 +376,22 @@ export function Sidebar() {
           <section className="sidebar-account">
             <div>
               <span className={`sync-indicator ${syncStatus}`} />
-              <p>{syncStatus === "syncing" ? "Guardando cambios..." : "Sincronizado"}</p>
-              <small>{session.user.email}</small>
+              <p>{syncStatus === "syncing" ? "Actualizando..." : "Sincronizado"}</p>
+              <small>{lastSyncLabel}</small>
             </div>
-            <button type="button" onClick={signOut}>
-              Salir
-            </button>
+            <div className="sidebar-account-actions">
+              <button
+                type="button"
+                className="sync-refresh-button"
+                onClick={syncNow}
+                disabled={syncStatus === "syncing" || syncStatus === "loading"}
+                aria-label="Actualizar datos"
+                title="Actualizar datos"
+              >
+                <IconRefresh size={19} />
+              </button>
+              <button type="button" onClick={signOut}>Salir</button>
+            </div>
           </section>
         ) : null}
       </aside>
