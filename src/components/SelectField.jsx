@@ -1,5 +1,6 @@
-import * as Select from "@radix-ui/react-select";
 import { IconCheck, IconChevronDown } from "@tabler/icons-react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 function normalizeOption(option) {
   return typeof option === "string" ? { value: option, label: option } : option;
@@ -16,48 +17,120 @@ export function SelectField({
   disabled = false,
   className = ""
 }) {
+  const triggerRef = useRef(null);
+  const contentRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState(null);
+  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue || "");
+  const normalizedOptions = options.map(normalizeOption);
+  const selectedValue = value ?? uncontrolledValue;
+  const selectedOption = normalizedOptions.find((option) => option.value === selectedValue);
+
+  function updatePosition() {
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setPosition({ top: rect.bottom + 7, left: rect.left, width: rect.width });
+  }
+
+  function toggle() {
+    if (disabled) return;
+    if (!open) updatePosition();
+    setOpen((current) => !current);
+  }
+
+  function choose(nextValue) {
+    if (value === undefined) setUncontrolledValue(nextValue);
+    onValueChange?.(nextValue);
+    setOpen(false);
+  }
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function closeOnOutsideClick(event) {
+      if (
+        !triggerRef.current?.contains(event.target) &&
+        !contentRef.current?.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    function closeOrReposition(event) {
+      if (event.type === "keydown" && event.key !== "Escape") return;
+      if (event.type === "keydown") setOpen(false);
+      else updatePosition();
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOrReposition);
+    window.addEventListener("resize", closeOrReposition);
+    window.addEventListener("scroll", closeOrReposition, true);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOrReposition);
+      window.removeEventListener("resize", closeOrReposition);
+      window.removeEventListener("scroll", closeOrReposition, true);
+    };
+  }, [open]);
+
   return (
-    <Select.Root
-      value={value}
-      defaultValue={defaultValue}
-      onValueChange={onValueChange}
-      name={name}
-      disabled={disabled}
-    >
-      <Select.Trigger
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
         className={`select-trigger ${className}`.trim()}
         aria-label={ariaLabel}
+        role="combobox"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        disabled={disabled}
+        onClick={toggle}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            if (!open) updatePosition();
+            setOpen(true);
+          }
+        }}
       >
-        <Select.Value placeholder={placeholder} />
-        <Select.Icon className="select-trigger-icon">
+        <span>{selectedOption?.label || placeholder}</span>
+        <span className="select-trigger-icon" aria-hidden="true">
           <IconChevronDown size={19} stroke={2} />
-        </Select.Icon>
-      </Select.Trigger>
-
-      <Select.Portal>
-        <Select.Content
-          className="select-content"
-          position="popper"
-          sideOffset={7}
-          collisionPadding={12}
-        >
-          <Select.Viewport className="select-viewport">
-            {options.map(normalizeOption).map((option) => (
-              <Select.Item
-                className="select-item"
-                key={option.value}
-                value={option.value}
-                disabled={option.disabled}
-              >
-                <Select.ItemText>{option.label}</Select.ItemText>
-                <Select.ItemIndicator className="select-item-indicator">
-                  <IconCheck size={17} stroke={2.4} />
-                </Select.ItemIndicator>
-              </Select.Item>
-            ))}
-          </Select.Viewport>
-        </Select.Content>
-      </Select.Portal>
-    </Select.Root>
+        </span>
+      </button>
+      {open && position
+        ? createPortal(
+          <div
+            ref={contentRef}
+            className="select-content"
+            role="listbox"
+            style={position}
+          >
+            <div className="select-viewport">
+              {normalizedOptions.map((option) => (
+                <button
+                  type="button"
+                  className="select-item"
+                  key={option.value}
+                  role="option"
+                  aria-selected={option.value === selectedValue}
+                  data-state={option.value === selectedValue ? "checked" : "unchecked"}
+                  disabled={option.disabled}
+                  onClick={() => choose(option.value)}
+                >
+                  {option.label}
+                  {option.value === selectedValue ? (
+                    <span className="select-item-indicator"><IconCheck size={17} stroke={2.4} /></span>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )
+        : null}
+      {name ? <input type="hidden" name={name} value={selectedValue} /> : null}
+    </>
   );
 }

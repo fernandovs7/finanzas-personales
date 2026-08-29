@@ -520,6 +520,7 @@ select {
 }
 
 .select-content {
+  position: fixed;
   z-index: 1000;
   min-width: var(--radix-select-trigger-width);
   max-height: min(340px, var(--radix-select-content-available-height));
@@ -540,13 +541,18 @@ select {
 
 .select-item {
   position: relative;
+  width: 100%;
   min-height: 42px;
   display: flex;
   align-items: center;
   padding: 9px 42px 9px 13px;
   border-radius: 12px;
+  border: 0;
+  background: transparent;
   color: #2f3035;
+  font: inherit;
   line-height: 1.25;
+  text-align: left;
   cursor: pointer;
   user-select: none;
   outline: none;
@@ -563,7 +569,7 @@ select {
   font-weight: 700;
 }
 
-.select-item[data-disabled] {
+.select-item:disabled {
   opacity: 0.45;
   pointer-events: none;
 }
@@ -586,6 +592,7 @@ select {
     transform: translateY(0) scale(1);
   }
 }
+
 
 select {
   appearance: none;
