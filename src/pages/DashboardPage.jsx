@@ -184,6 +184,7 @@ export function DashboardPage() {
                         <div className="fortnight-stat"><span>Pasaste a colones</span><strong>{money(item.incomeCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Fijos</span><strong>{money(item.fixedCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Pagos planeados</span><strong>{money(item.liabilitiesCrc, "CRC")}</strong></div>
+                        <div className="fortnight-stat subtotal"><span>Fijos + pagos planeados</span><strong>{money(item.fixedAndLiabilitiesCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Gastado</span><strong>{money(item.movementCrc, "CRC")}</strong></div>
                       </div>
 
@@ -192,6 +193,7 @@ export function DashboardPage() {
                         <div className="fortnight-stat"><span>Salario total</span><strong>{money(item.totalUsd, "USD")}</strong></div>
                         <div className="fortnight-stat"><span>Pagos apartados</span><strong>{money(item.liabilitiesUsd, "USD")}</strong></div>
                         <div className="fortnight-stat"><span>Fijos apartados</span><strong>{money(item.reservedFixedUsd, "USD")}</strong></div>
+                        <div className="fortnight-stat subtotal"><span>Fijos + pagos apartados</span><strong>{money(item.fixedAndLiabilitiesUsd, "USD")}</strong></div>
                         <div className="fortnight-stat"><span>Ahorro apartado</span><strong>{money(item.reservedSavingsUsd, "USD")}</strong></div>
                         <div className="fortnight-stat subtotal"><span>USD que pasaste a colones</span><strong>{money(item.convertedUsd, "USD")}</strong></div>
                       </div>

@@ -236,6 +236,8 @@ export function useFinanceSelectors({
         fixedCrc,
         liabilitiesUsd,
         liabilitiesCrc,
+        fixedAndLiabilitiesUsd: fixedUsd + liabilitiesUsd,
+        fixedAndLiabilitiesCrc: fixedCrc + liabilitiesCrc,
         savingsCrc,
         movementCrc,
         movementUsd,
