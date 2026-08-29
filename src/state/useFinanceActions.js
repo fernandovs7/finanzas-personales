@@ -108,6 +108,18 @@ export function useFinanceActions({
     }));
   }
 
+  function deleteSavingPlan(id) {
+    setState((current) => ({
+      ...current,
+      savingPlans: current.savingPlans.filter((item) => item.id !== id),
+      savings: current.savings.filter((item) => item.planId !== id)
+    }));
+
+    if (editingRecord?.section === "savings" && editDraft?.planId === id) {
+      stopEditing();
+    }
+  }
+
   function handleSalarySubmit(event) {
     event.preventDefault();
     updateState("incomes", {
@@ -463,5 +475,5 @@ export function useFinanceActions({
   }
 
 
-  return { handleSalarySubmit, handleFixedExpense, handleHousingItemSubmit, updateHousingItem, toggleHousingContribution, toggleHousingTransfer, handleMovementSubmit, applyMovementPreset, handleLiabilitySubmit, handleSavingsSubmit, handleEditSubmit, startEditing, stopEditing, deleteRecord, toggleFixedExpense, toggleFixedExpensePaid, toggleSavingPlan };
+  return { handleSalarySubmit, handleFixedExpense, handleHousingItemSubmit, updateHousingItem, toggleHousingContribution, toggleHousingTransfer, handleMovementSubmit, applyMovementPreset, handleLiabilitySubmit, handleSavingsSubmit, handleEditSubmit, startEditing, stopEditing, deleteRecord, toggleFixedExpense, toggleFixedExpensePaid, toggleSavingPlan, deleteSavingPlan };
 }

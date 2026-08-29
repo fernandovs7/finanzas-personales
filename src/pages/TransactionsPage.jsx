@@ -8,7 +8,7 @@ import { applySmartTextFormatting, handleCapitalizedInput } from "../utils/text.
 export function TransactionsPage() {
   const { state, periodData, historySummary, historyFilter, setHistoryFilter, historySearch,
       setHistorySearch, groupedHistoryItems, editingRecord, editDraft, setEditDraft,
-      startEditing, stopEditing, deleteRecord, handleEditSubmit } = useFinance();
+      startEditing, stopEditing, deleteRecord, deleteSavingPlan, handleEditSubmit } = useFinance();
   return (
     <>
         {state.activeView === "history" ? (
@@ -97,7 +97,11 @@ export function TransactionsPage() {
                               item={item}
                               isEditing={isEditing}
                               onEdit={() => (isEditing ? stopEditing() : startEditing(item.section, item))}
-                              onDelete={() => deleteRecord(item.section, item.id)}
+                              onDelete={() =>
+                                item.section === "savings" && (item.planId || item.sourcePlanId)
+                                  ? deleteSavingPlan(item.planId || item.sourcePlanId)
+                                  : deleteRecord(item.section, item.id)
+                              }
                               canDelete={item.canDelete !== false}
                             >
                               <form className="history-form" onSubmit={handleEditSubmit}>

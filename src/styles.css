@@ -790,6 +790,12 @@ select {
   letter-spacing: -0.02em;
 }
 
+.savings-progress-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .progress-meter {
   width: 100%;
   height: 12px;

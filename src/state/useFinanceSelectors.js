@@ -594,7 +594,7 @@ export function useFinanceSelectors({
         subtitle: `${toFortnight(item.date)} • ${item.currency}${item.planId || item.generated ? " • Meta recurrente" : ""}`,
         amountPrimary: `Meta ${money(item.target, item.currency)}`,
         amountSecondary: `Real ${money(item.actual, item.currency)}`,
-        canDelete: !item.generated
+        canDelete: true
       }))
     ];
 

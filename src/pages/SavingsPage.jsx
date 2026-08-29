@@ -8,7 +8,7 @@ import { toFortnight } from "../utils/date.js";
 
 export function SavingsPage() {
   const { state, periodData, savingsSummary, savingsDraft, setSavingsDraft,
-      handleSavingsSubmit, toggleSavingPlan } = useFinance();
+      handleSavingsSubmit, toggleSavingPlan, deleteRecord, deleteSavingPlan } = useFinance();
   return (
     <>
         {state.activeView === "savings" ? (
@@ -219,12 +219,25 @@ export function SavingsPage() {
 
                     <div className="savings-progress-footer">
                       <span>{Math.round(savingsProgressPercent(item))}% completado</span>
-                      <strong>
-                        {Number(item.actual || 0) >= Number(item.target || 0) &&
-                        Number(item.target || 0) > 0
-                          ? "Meta cumplida"
-                          : "Todavía en camino"}
-                      </strong>
+                      <div className="savings-progress-actions">
+                        <strong>
+                          {Number(item.actual || 0) >= Number(item.target || 0) &&
+                          Number(item.target || 0) > 0
+                            ? "Meta cumplida"
+                            : "Todavía en camino"}
+                        </strong>
+                        <button
+                          type="button"
+                          className="ghost-btn danger"
+                          onClick={() =>
+                            item.planId || item.generated
+                              ? deleteSavingPlan(item.planId || item.sourcePlanId)
+                              : deleteRecord("savings", item.id)
+                          }
+                        >
+                          Eliminar
+                        </button>
+                      </div>
                     </div>
                   </article>
                 ))}
@@ -250,10 +263,18 @@ export function SavingsPage() {
                         <div>{item.currency}</div>
                         <div>
                           <button
+                            type="button"
                             className={`pill-button ${item.active ? "on" : "off"}`}
                             onClick={() => toggleSavingPlan(item.id)}
                           >
                             {item.active ? "Activa" : "Pausada"}
+                          </button>
+                          <button
+                            type="button"
+                            className="ghost-btn danger"
+                            onClick={() => deleteSavingPlan(item.id)}
+                          >
+                            Eliminar
                           </button>
                         </div>
                       </div>
