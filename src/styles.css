@@ -1569,6 +1569,14 @@ select {
   cursor: pointer;
 }
 
+.saving-plan-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .filter-chips,
 .history-list {
   display: grid;

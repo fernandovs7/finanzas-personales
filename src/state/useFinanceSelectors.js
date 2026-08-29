@@ -74,10 +74,10 @@ export function useFinanceSelectors({
       return sum + sumLiabilitiesForFortnight(liabilities, fortnight, "USD");
     }, 0);
 
-    const reservedSavingsUsd = incomes.reduce(
-      (sum, item) => sum + (item.reserveSavingsUsd || 0),
-      0
-    );
+    const reserveSavingsUsdPerFortnight = savings
+      .filter((item) => item.currency === "USD")
+      .reduce((sum, item) => sum + savingsReservePerFortnight(item), 0);
+    const reservedSavingsUsd = incomes.length * reserveSavingsUsdPerFortnight;
 
     const reservedFixedUsd = incomes.reduce((sum, item) => {
       const fortnight = toFortnight(item.date);
@@ -91,7 +91,7 @@ export function useFinanceSelectors({
       return (
         sum +
         Math.max(
-          item.totalUsd - paymentsUsd - fixedUsdForFortnight - (item.reserveSavingsUsd || 0),
+          item.totalUsd - paymentsUsd - fixedUsdForFortnight - reserveSavingsUsdPerFortnight,
           0
         )
       );
@@ -102,7 +102,7 @@ export function useFinanceSelectors({
       const paymentsUsd = sumLiabilitiesForFortnight(liabilities, fortnight, "USD");
       const fixedUsdForFortnight = splitFixed(fixedExpenses, fortnight, "USD");
       const convertedUsd = Math.max(
-        item.totalUsd - paymentsUsd - fixedUsdForFortnight - (item.reserveSavingsUsd || 0),
+        item.totalUsd - paymentsUsd - fixedUsdForFortnight - reserveSavingsUsdPerFortnight,
         0
       );
       return sum + convertedUsd * item.rate;
@@ -128,9 +128,6 @@ export function useFinanceSelectors({
     const savingsTargetCrc = savings
       .filter((item) => item.currency === "CRC")
       .reduce((sum, item) => sum + item.target, 0);
-    const savingsActualCrc = savings
-      .filter((item) => item.currency === "CRC")
-      .reduce((sum, item) => sum + item.actual, 0);
     const movementCrc = movements
       .filter((item) => item.currency === "CRC")
       .reduce((sum, item) => sum + item.amount, 0);
@@ -158,11 +155,10 @@ export function useFinanceSelectors({
       liabilitiesCrc,
       savingsTargetUsd,
       savingsTargetCrc,
-      savingsActualCrc,
       movementCrc,
       movementUsd,
       availableCrcBudget: incomeCrc - fixedCrc - liabilitiesCrc - savingsTargetCrc,
-      availableCrcActual: incomeCrc - fixedCrc - liabilitiesCrc - savingsActualCrc - movementCrc
+      availableCrcActual: incomeCrc - fixedCrc - liabilitiesCrc - savingsTargetCrc - movementCrc
     };
   }, [state]);
 
@@ -190,9 +186,9 @@ export function useFinanceSelectors({
       const totalUsd = incomes.reduce((sum, item) => sum + item.totalUsd, 0);
       const liabilitiesUsd = sumLiabilitiesForFortnight(periodData.liabilities, fortnight, "USD");
       const liabilitiesCrc = sumLiabilitiesForFortnight(periodData.liabilities, fortnight, "CRC");
-      const savingsCrc = periodData.savings
-        .filter((item) => toFortnight(item.date) === fortnight && item.currency === "CRC")
-        .reduce((sum, item) => sum + item.actual, 0);
+      const reservedSavingsCrc = periodData.savings
+        .filter((item) => item.currency === "CRC")
+        .reduce((sum, item) => sum + savingsReservePerFortnight(item), 0);
       const movementCrc = periodData.movements
         .filter((item) => item.bagFortnight === fortnight && item.currency === "CRC")
         .reduce((sum, item) => sum + item.amount, 0);
@@ -202,16 +198,15 @@ export function useFinanceSelectors({
 
       const fixedUsd = splitFixed(periodData.fixedExpenses, fortnight, "USD");
       const fixedCrc = splitFixed(periodData.fixedExpenses, fortnight, "CRC");
-      const reservedSavingsUsd = incomes.reduce(
-        (sum, item) => sum + (item.reserveSavingsUsd || 0),
-        0
-      );
+      const reservedSavingsUsd = periodData.savings
+        .filter((item) => item.currency === "USD")
+        .reduce((sum, item) => sum + savingsReservePerFortnight(item), 0);
       const reservedFixedUsd = fixedUsd;
       const convertedUsd = incomes.reduce(
         (sum, item) =>
           sum +
           Math.max(
-            item.totalUsd - liabilitiesUsd - fixedUsd - (item.reserveSavingsUsd || 0),
+            item.totalUsd - liabilitiesUsd - fixedUsd - reservedSavingsUsd,
             0
           ),
         0
@@ -220,7 +215,7 @@ export function useFinanceSelectors({
         (sum, item) =>
           sum +
           Math.max(
-            item.totalUsd - liabilitiesUsd - fixedUsd - (item.reserveSavingsUsd || 0),
+            item.totalUsd - liabilitiesUsd - fixedUsd - reservedSavingsUsd,
             0
           ) *
             item.rate,
@@ -238,12 +233,12 @@ export function useFinanceSelectors({
         liabilitiesCrc,
         fixedAndLiabilitiesUsd: fixedUsd + liabilitiesUsd,
         fixedAndLiabilitiesCrc: fixedCrc + liabilitiesCrc,
-        savingsCrc,
+        reservedSavingsCrc,
         movementCrc,
         movementUsd,
         reservedFixedUsd,
         reservedSavingsUsd,
-        availableCrc: incomeCrc - fixedCrc - liabilitiesCrc - savingsCrc - movementCrc
+        availableCrc: incomeCrc - fixedCrc - liabilitiesCrc - reservedSavingsCrc - movementCrc
       };
     });
   }, [periodData]);
@@ -259,7 +254,9 @@ export function useFinanceSelectors({
       state.housingItems
     );
     const reserveFixedUsd = splitFixed(effectiveFixed, fortnight, "USD");
-    const reserveSavingsUsd = Number(salaryDraft.reserveSavingsUsd || 0);
+    const reserveSavingsUsd = periodData.savings
+      .filter((item) => item.currency === "USD")
+      .reduce((sum, item) => sum + savingsReservePerFortnight(item), 0);
     const usdToConvert = Math.max(
       Number(salaryDraft.totalUsd || 0) -
         reservePaymentsUsd -
@@ -276,7 +273,7 @@ export function useFinanceSelectors({
       usdToConvert,
       convertedCrc
     };
-  }, [salaryDraft.date, salaryDraft.rate, salaryDraft.reserveSavingsUsd, salaryDraft.totalUsd, state.fixedExpenses, state.housingItems, state.liabilities, state.selectedPeriod]);
+  }, [salaryDraft.date, salaryDraft.rate, salaryDraft.totalUsd, state.fixedExpenses, state.housingItems, state.liabilities, state.selectedPeriod, periodData.savings]);
 
   const housingSummary = useMemo(() => {
     const items = activeHousingItems(state.housingItems).sort(
@@ -551,7 +548,7 @@ export function useFinanceSelectors({
         title: item.note,
         subtitle: `TC ${item.rate} • ${toFortnight(item.date)}`,
         amountPrimary: money(item.totalUsd, "USD"),
-        amountSecondary: `Ahorro USD ${money(item.reserveSavingsUsd, "USD")}`
+        amountSecondary: "Las metas de ahorro se apartan automáticamente por quincena"
       })),
       ...periodData.liabilities.map((item) => ({
         ...item,
@@ -593,7 +590,7 @@ export function useFinanceSelectors({
         title: item.note,
         subtitle: `${toFortnight(item.date)} • ${item.currency}${item.planId || item.generated ? " • Meta recurrente" : ""}`,
         amountPrimary: `Meta ${money(item.target, item.currency)}`,
-        amountSecondary: `Real ${money(item.actual, item.currency)}`,
+        amountSecondary: `Reserva por quincena ${money(savingsReservePerFortnight(item), item.currency)}`,
         canDelete: true
       }))
     ];

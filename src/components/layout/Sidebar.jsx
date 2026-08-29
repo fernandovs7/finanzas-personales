@@ -134,27 +134,11 @@ export function Sidebar() {
                 required
               />
             </label>
-            <label>
-              Ahorro que querés dejar en USD
-              <input
-                name="reserveSavingsUsd"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={salaryDraft.reserveSavingsUsd}
-                onChange={(event) =>
-                  setSalaryDraft((current) => ({
-                    ...current,
-                    reserveSavingsUsd: event.target.value
-                  }))
-                }
-              />
-            </label>
             <div className="helper-box">
               <strong>{salaryPreview.fortnight}</strong>
               <span>Pagos en USD: {money(salaryPreview.reservePaymentsUsd, "USD")}</span>
               <span>Fijos en USD: {money(salaryPreview.reserveFixedUsd, "USD")}</span>
-              <span>Ahorro en USD: {money(salaryPreview.reserveSavingsUsd, "USD")}</span>
+              <span>Ahorro apartado automáticamente: {money(salaryPreview.reserveSavingsUsd, "USD")}</span>
               <span>USD que pasarías a colones: {money(salaryPreview.usdToConvert, "USD")}</span>
               <span>Colones que recibirías: {money(salaryPreview.convertedCrc, "CRC")}</span>
             </div>

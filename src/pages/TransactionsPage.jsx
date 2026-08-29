@@ -177,20 +177,6 @@ export function TransactionsPage() {
                                   required
                                 />
                               </label>
-                              <label>
-                                Ahorro USD
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  value={editDraft?.reserveSavingsUsd ?? ""}
-                                  onChange={(event) =>
-                                    setEditDraft((current) => ({
-                                      ...current,
-                                      reserveSavingsUsd: event.target.value
-                                    }))
-                                  }
-                                />
-                              </label>
                             </>
                           ) : null}
 
@@ -313,18 +299,6 @@ export function TransactionsPage() {
                                   value={editDraft?.target ?? ""}
                                   onChange={(event) =>
                                     setEditDraft((current) => ({ ...current, target: event.target.value }))
-                                  }
-                                  required
-                                />
-                              </label>
-                              <label>
-                                Real
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  value={editDraft?.actual ?? ""}
-                                  onChange={(event) =>
-                                    setEditDraft((current) => ({ ...current, actual: event.target.value }))
                                   }
                                   required
                                 />

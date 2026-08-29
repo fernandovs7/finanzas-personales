@@ -3,7 +3,7 @@ import { SectionTitle, SummaryCard } from "../components/ui.jsx";
 import { SelectField } from "../components/SelectField.jsx";
 import { money } from "../utils/money.js";
 import { applySmartTextFormatting, handleCapitalizedInput } from "../utils/text.js";
-import { savingsProgressPercent, savingsRemaining, savingsReservePerFortnight } from "../domain/finance.js";
+import { savingsReservePerFortnight } from "../domain/finance.js";
 import { toFortnight } from "../utils/date.js";
 
 export function SavingsPage() {
@@ -17,7 +17,7 @@ export function SavingsPage() {
               <SectionTitle
                 eyebrow="Separado del gasto"
                 title="Ahorro del periodo"
-                description="Acá definís tu meta mensual, cuánto ya apartaste de verdad y cuánto te tocaría reservar por quincena."
+                description="Cada meta se separa automáticamente en dos quincenas y reduce el dinero disponible para convertir o gastar."
               />
               <section className="summary-grid compact-grid">
                 <SummaryCard
@@ -26,9 +26,9 @@ export function SavingsPage() {
                   hint={`Reserva por quincena: ${money(savingsSummary.reservePerFortnightUsd, "USD")}`}
                 />
                 <SummaryCard
-                  title="Ahorro real USD"
-                  value={money(savingsSummary.actualUsd, "USD")}
-                  hint={`Te faltan ${money(savingsSummary.remainingUsd, "USD")} para completar la meta del mes.`}
+                  title="Apartado por quincena USD"
+                  value={money(savingsSummary.reservePerFortnightUsd, "USD")}
+                  hint="Este monto se descuenta automáticamente de cada salario."
                 />
                 <SummaryCard
                   title="Meta mensual CRC"
@@ -36,31 +36,25 @@ export function SavingsPage() {
                   hint={`Reserva por quincena: ${money(savingsSummary.reservePerFortnightCrc, "CRC")}`}
                 />
                 <SummaryCard
-                  title="Ahorro real CRC"
-                  value={money(savingsSummary.actualCrc, "CRC")}
-                  hint={`Te faltan ${money(savingsSummary.remainingCrc, "CRC")} para completar la meta en colones.`}
+                  title="Apartado por quincena CRC"
+                  value={money(savingsSummary.reservePerFortnightCrc, "CRC")}
+                  hint="Este monto se descuenta automáticamente de cada quincena."
                 />
               </section>
 
               <section className="savings-overview">
                 <article className="savings-overview-main">
                   <p className="eyebrow">Lectura rápida</p>
-                  <h4>
-                    {savingsSummary.completedGoals} de {savingsSummary.totalGoals} metas van completas
-                  </h4>
+                  <h4>{savingsSummary.totalGoals} metas se apartarán en el periodo</h4>
                   <p>
-                    Acá ves de un vistazo cuánto ya completaste, cuánto sigue en camino y cuántas
-                    metas vienen de una plantilla recurrente.
+                    Acá ves cuánto se reservará por quincena y cuántas metas vienen de una
+                    plantilla recurrente.
                   </p>
                 </article>
                 <div className="savings-overview-stats">
                   <div className="savings-overview-stat">
-                    <span>Completas</span>
-                    <strong>{savingsSummary.completedGoals}</strong>
-                  </div>
-                  <div className="savings-overview-stat">
-                    <span>En camino</span>
-                    <strong>{savingsSummary.inProgressGoals}</strong>
+                    <span>Metas del mes</span>
+                    <strong>{savingsSummary.totalGoals}</strong>
                   </div>
                   <div className="savings-overview-stat">
                     <span>Recurrentes</span>
@@ -135,19 +129,6 @@ export function SavingsPage() {
                     required
                   />
                 </label>
-                <label>
-                  Ahorro real acumulado
-                  <input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={savingsDraft.actual}
-                    onChange={(event) =>
-                      setSavingsDraft((current) => ({ ...current, actual: event.target.value }))
-                    }
-                    required
-                  />
-                </label>
                 <div className="helper-box savings-helper">
                   <strong>Así se reparte en el mes</strong>
                   <span>
@@ -161,16 +142,7 @@ export function SavingsPage() {
                       savingsDraft.currency
                     )}
                   </span>
-                  <span>
-                    Te faltarían: {money(
-                      Math.max(
-                        (Number(savingsDraft.target || 0) || 0) -
-                          (Number(savingsDraft.actual || 0) || 0),
-                        0
-                      ),
-                      savingsDraft.currency
-                    )}
-                  </span>
+                  <span>Ese monto se rebajará automáticamente del salario de cada quincena.</span>
                 </div>
                 <button className="primary-btn full" type="submit">
                   Guardar ahorro
@@ -201,31 +173,14 @@ export function SavingsPage() {
                         <strong>{money(item.target, item.currency)}</strong>
                       </div>
                       <div>
-                        <span>Ahorrado</span>
-                        <strong>{money(item.actual, item.currency)}</strong>
+                        <span>Por quincena</span>
+                        <strong>{money(savingsReservePerFortnight(item), item.currency)}</strong>
                       </div>
-                      <div>
-                        <span>Falta</span>
-                        <strong>{money(savingsRemaining(item), item.currency)}</strong>
-                      </div>
-                    </div>
-
-                    <div className="progress-meter">
-                      <div
-                        className="progress-meter-fill"
-                        style={{ width: `${savingsProgressPercent(item)}%` }}
-                      />
                     </div>
 
                     <div className="savings-progress-footer">
-                      <span>{Math.round(savingsProgressPercent(item))}% completado</span>
+                      <span>Se aparta de cada salario</span>
                       <div className="savings-progress-actions">
-                        <strong>
-                          {Number(item.actual || 0) >= Number(item.target || 0) &&
-                          Number(item.target || 0) > 0
-                            ? "Meta cumplida"
-                            : "Todavía en camino"}
-                        </strong>
                         <button
                           type="button"
                           className="ghost-btn danger"
@@ -261,7 +216,7 @@ export function SavingsPage() {
                         </div>
                         <div>{money(item.target, item.currency)}</div>
                         <div>{item.currency}</div>
-                        <div>
+                        <div className="saving-plan-actions">
                           <button
                             type="button"
                             className={`pill-button ${item.active ? "on" : "off"}`}

@@ -36,7 +36,6 @@ export function useFinanceModel() {
     date: TODAY,
     totalUsd: "",
     rate: "450",
-    reserveSavingsUsd: "0",
     note: ""
   });
   const [movementDraft, setMovementDraft] = useState(
@@ -56,7 +55,6 @@ export function useFinanceModel() {
     date: TODAY,
     mode: "single",
     target: "",
-    actual: "",
     currency: "USD",
     note: ""
   });

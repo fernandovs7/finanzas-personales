@@ -1,6 +1,6 @@
 import { useFinance } from "../state/FinanceContext.jsx";
 import { HelpHint, Icon, ListRow, SectionTitle, SummaryCard } from "../components/ui.jsx";
-import { splitFixed, sumLiabilitiesForFortnight } from "../domain/finance.js";
+import { savingsReservePerFortnight, splitFixed, sumLiabilitiesForFortnight } from "../domain/finance.js";
 import { periodLabel, toFortnight } from "../utils/date.js";
 import { money } from "../utils/money.js";
 
@@ -135,7 +135,7 @@ export function DashboardPage() {
                     ["Pasaste a colones", money(periodData.incomeCrc, "CRC")],
                     ["Fijos CRC", money(periodData.fixedCrc, "CRC")],
                     ["Pagos planeados CRC", money(periodData.liabilitiesCrc, "CRC")],
-                    ["Ahorro real CRC", money(periodData.savingsActualCrc, "CRC")],
+                    ["Ahorro reservado CRC", money(periodData.savingsTargetCrc, "CRC")],
                     ["Disponible real CRC", money(periodData.availableCrcActual, "CRC")]
                   ].map(([label, value]) => (
                     <div className="breakdown-row" key={label}>
@@ -184,7 +184,8 @@ export function DashboardPage() {
                         <div className="fortnight-stat"><span>Pasaste a colones</span><strong>{money(item.incomeCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Fijos</span><strong>{money(item.fixedCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Pagos planeados</span><strong>{money(item.liabilitiesCrc, "CRC")}</strong></div>
-                        <div className="fortnight-stat subtotal"><span>Fijos + pagos planeados</span><strong>{money(item.fixedAndLiabilitiesCrc, "CRC")}</strong></div>
+                        <div className="fortnight-stat"><span>Ahorro apartado</span><strong>{money(item.reservedSavingsCrc, "CRC")}</strong></div>
+                        <div className="fortnight-stat subtotal"><span>Fijos, pagos y ahorro</span><strong>{money(item.fixedAndLiabilitiesCrc + item.reservedSavingsCrc, "CRC")}</strong></div>
                         <div className="fortnight-stat"><span>Gastado</span><strong>{money(item.movementCrc, "CRC")}</strong></div>
                       </div>
 
@@ -214,7 +215,9 @@ export function DashboardPage() {
                     "USD"
                   );
                   const reserveFixedUsd = splitFixed(periodData.fixedExpenses, fortnight, "USD");
-                  const reserveSavingsUsd = item.reserveSavingsUsd || 0;
+                  const reserveSavingsUsd = periodData.savings
+                    .filter((saving) => saving.currency === "USD")
+                    .reduce((sum, saving) => sum + savingsReservePerFortnight(saving), 0);
                   const convertedUsd = Math.max(
                     item.totalUsd - reservePaymentsUsd - reserveFixedUsd - reserveSavingsUsd,
                     0

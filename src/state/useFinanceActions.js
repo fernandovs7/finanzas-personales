@@ -341,7 +341,7 @@ export function useFinanceActions({
     const savingItem = {
       date: savingsDraft.date,
       target: Number(savingsDraft.target || 0),
-      actual: Number(savingsDraft.actual || 0),
+      actual: 0,
       currency: savingsDraft.currency,
       note: applySmartTextFormatting(savingsDraft.note || "Meta de ahorro")
     };
@@ -380,7 +380,6 @@ export function useFinanceActions({
       ...current,
       mode: "single",
       target: "",
-      actual: "",
       currency: "USD",
       note: ""
     }));
