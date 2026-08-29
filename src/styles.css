@@ -1524,23 +1524,20 @@ select {
   position: absolute;
   right: 0;
   bottom: calc(100% + 6px);
-  padding: 4px 7px;
-  border-radius: 6px;
-  background: #1d1d22;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--green);
   color: #fff;
-  font-size: 0.68rem;
-  font-weight: 700;
-  opacity: 0;
   pointer-events: none;
-  transform: translateY(2px);
-  transition: opacity 160ms ease, transform 160ms ease;
 }
 
-.copyable-amount:hover .copyable-amount-feedback,
-.copyable-amount:focus-visible .copyable-amount-feedback,
-.copyable-amount:focus .copyable-amount-feedback {
-  opacity: 1;
-  transform: translateY(0);
+.copyable-amount-feedback svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 3;
 }
 
 .housing-main-total.copyable-amount {

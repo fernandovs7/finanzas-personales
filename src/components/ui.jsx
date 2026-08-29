@@ -2,6 +2,7 @@ import {
   IconArrowsExchange,
   IconCashBanknote,
   IconCashRegister,
+  IconCheck,
   IconCreditCardPay,
   IconHomeDollar,
   IconHomeStats,
@@ -32,13 +33,14 @@ export function CopyableAmount({ amount, currency = "CRC", format, className = "
       type="button"
       className={`copyable-amount ${className}`.trim()}
       onClick={copy}
-      title="Copiar monto"
       aria-label={`Copiar ${clipboardAmount(amount)}`}
     >
       {displayValue}
-      <span className="copyable-amount-feedback" aria-live="polite">
-        {copied ? "Copiado" : "Copiar"}
-      </span>
+      {copied ? (
+        <span className="copyable-amount-feedback" role="status" aria-label="Monto copiado">
+          <IconCheck aria-hidden="true" />
+        </span>
+      ) : null}
     </button>
   );
 }
