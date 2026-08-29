@@ -11,6 +11,37 @@ import {
   IconTransactionDollar,
   IconWallet
 } from "@tabler/icons-react";
+import { useState } from "react";
+
+function clipboardAmount(amount) {
+  return Number(amount || 0).toFixed(2);
+}
+
+export function CopyableAmount({ amount, currency = "CRC", format, className = "" }) {
+  const [copied, setCopied] = useState(false);
+  const displayValue = format ? format(amount, currency) : clipboardAmount(amount);
+
+  async function copy() {
+    await navigator.clipboard.writeText(clipboardAmount(amount));
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  return (
+    <button
+      type="button"
+      className={`copyable-amount ${className}`.trim()}
+      onClick={copy}
+      title="Copiar monto"
+      aria-label={`Copiar ${clipboardAmount(amount)}`}
+    >
+      {displayValue}
+      <span className="copyable-amount-feedback" aria-live="polite">
+        {copied ? "Copiado" : "Copiar"}
+      </span>
+    </button>
+  );
+}
 
 export function SectionTitle({ eyebrow, title, description }) {
   return (

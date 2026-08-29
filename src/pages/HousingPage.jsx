@@ -11,7 +11,7 @@ import {
   IconUsers
 } from "@tabler/icons-react";
 import { CollapsibleContent } from "../components/CollapsibleContent.jsx";
-import { SectionTitle, SummaryCard } from "../components/ui.jsx";
+import { CopyableAmount, SectionTitle, SummaryCard } from "../components/ui.jsx";
 import { useFinance } from "../state/FinanceContext.jsx";
 import { isHousingTransferComplete } from "../domain/housingFund.js";
 import { money, preciseMoney } from "../utils/money.js";
@@ -76,13 +76,13 @@ function FortnightFundingCard({ entry, amount, itemCount, onToggle }) {
 
       <div className="housing-funding-summary">
         <span>
-          Reunido <strong>{preciseMoney(entry.gathered, "CRC")}</strong>
+          Reunido <CopyableAmount amount={entry.gathered} format={preciseMoney} />
         </span>
         <span>
-          Transferido <strong>{preciseMoney(entry.transferred, "CRC")}</strong>
+          Transferido <CopyableAmount amount={entry.transferred} format={preciseMoney} />
         </span>
         <span>
-          Por transferir <strong>{preciseMoney(entry.pendingTransfer, "CRC")}</strong>
+          Por transferir <CopyableAmount amount={entry.pendingTransfer} format={preciseMoney} />
         </span>
       </div>
     </article>
@@ -166,7 +166,11 @@ export function HousingPage() {
           <div className="housing-summary-copy">
             <span className="housing-hero-icon"><IconHomeDollar aria-hidden="true" /></span>
             <p className="eyebrow">Total mensual de la casa</p>
-            <p className="housing-main-total">{preciseMoney(housingSummary.monthlyTotal, "CRC")}</p>
+            <CopyableAmount
+              amount={housingSummary.monthlyTotal}
+              format={preciseMoney}
+              className="housing-main-total"
+            />
             <p>
               Este fondo reúne tu aporte y el de Fabi antes de distribuirlo entre las cuentas de cada categoría.
             </p>
@@ -174,11 +178,11 @@ export function HousingPage() {
           <div className="housing-flow">
             <div>
               <span><IconUsers aria-hidden="true" /> Por persona al mes</span>
-              <strong>{preciseMoney(housingSummary.personMonthly, "CRC")}</strong>
+              <CopyableAmount amount={housingSummary.personMonthly} format={preciseMoney} />
             </div>
             <div>
               <span><IconBuildingBank aria-hidden="true" /> Por persona / quincena</span>
-              <strong>{preciseMoney(housingSummary.personFortnight, "CRC")}</strong>
+              <CopyableAmount amount={housingSummary.personFortnight} format={preciseMoney} />
             </div>
           </div>
         </div>
@@ -315,9 +319,9 @@ export function HousingPage() {
                   <strong>{item.label}</strong>
                   <small>Fondo compartido</small>
                 </div>
-                <strong>{money(item.monthlyAmountCrc, "CRC")}</strong>
-                <span>{preciseMoney(item.monthlyAmountCrc / 2, "CRC")}</span>
-                <span>{preciseMoney(housingSummary.getPersonFortnightAmount(item), "CRC")}</span>
+                <CopyableAmount amount={item.monthlyAmountCrc} format={money} />
+                <CopyableAmount amount={item.monthlyAmountCrc / 2} format={preciseMoney} />
+                <CopyableAmount amount={housingSummary.getPersonFortnightAmount(item)} format={preciseMoney} />
                 <div className="housing-destination">
                   <IconBuildingBank aria-hidden="true" />
                   <span>{item.destinationAccount || "Sin asignar"}</span>

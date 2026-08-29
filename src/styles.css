@@ -1500,6 +1500,57 @@ select {
   line-height: 1.35;
 }
 
+.copyable-amount {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  cursor: copy;
+}
+
+.copyable-amount:hover,
+.copyable-amount:focus-visible {
+  color: var(--coral);
+  outline: none;
+}
+
+.copyable-amount-feedback {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: #1d1d22;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(2px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.copyable-amount:hover .copyable-amount-feedback,
+.copyable-amount:focus-visible .copyable-amount-feedback,
+.copyable-amount:focus .copyable-amount-feedback {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.housing-main-total.copyable-amount {
+  display: block;
+  margin: 8px 0;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+
 .list-card .muted {
   margin-top: 4px;
   font-size: 0.94rem;
