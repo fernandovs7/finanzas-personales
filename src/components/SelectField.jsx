@@ -29,7 +29,20 @@ export function SelectField({
   function updatePosition() {
     const rect = triggerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    setPosition({ top: rect.bottom + 7, left: rect.left, width: rect.width });
+    const gap = 7;
+    const viewportPadding = 16;
+    const availableHeight = Math.max(
+      120,
+      window.innerHeight - rect.bottom - gap - viewportPadding
+    );
+
+    setPosition({
+      top: rect.bottom + gap,
+      left: rect.left,
+      width: rect.width,
+      "--select-max-height": `${Math.min(340, availableHeight)}px`,
+      "--select-viewport-max-height": `${Math.min(326, availableHeight - 12)}px`
+    });
   }
 
   function toggle() {

@@ -522,8 +522,8 @@ select {
 .select-content {
   position: fixed;
   z-index: 1000;
-  min-width: var(--radix-select-trigger-width);
-  max-height: min(340px, var(--radix-select-content-available-height));
+  min-width: 0;
+  max-height: var(--select-max-height, 340px);
   overflow: hidden;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 18px;
@@ -531,12 +531,15 @@ select {
   background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 22px 56px rgba(24, 24, 28, 0.18), 0 4px 14px rgba(24, 24, 28, 0.08);
   backdrop-filter: blur(18px);
-  transform-origin: var(--radix-select-content-transform-origin);
+  transform-origin: top center;
   animation: select-in 150ms ease-out;
 }
 
 .select-viewport {
-  max-height: 326px;
+  max-height: var(--select-viewport-max-height, 326px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .select-item {
