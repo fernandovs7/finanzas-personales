@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vite build --ssr src/server/index.js --outDir dist/server --emptyOutDir false",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "node --test src/**/*.test.js"
   },
@@ -17,8 +17,7 @@
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
-    "@openai/sites-vite-plugin": "^0.2.0",
-    "@vitejs/plugin-react": "^6.1.1",
-    "vite": "^8.2.2"
+    "@vitejs/plugin-react": "^5.0.2",
+    "vite": "^7.1.3"
   }
 }
